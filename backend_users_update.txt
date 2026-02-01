@@ -1,0 +1,67 @@
+
+# À AJOUTER dans run.py après la création de la base de données
+
+# Créer les utilisateurs par défaut (Admin + Opérateurs pour chaque institution)
+def create_default_users():
+    from crud_users import create_user
+    from schemas import UserCreate
+
+    db = SessionLocal()
+
+    try:
+        # Vérifier si l'admin existe déjà
+        existing_admin = db.query(User).filter(User.email == 'admin@queueflow.sn').first()
+        if existing_admin:
+            print('✅ Admin existe déjà')
+        else:
+            # Créer l'admin
+            admin_data = UserCreate(
+                email='admin@queueflow.sn',
+                password='admin123',
+                name='Admin QueueFlow',
+                role='admin',
+                institution_id=None
+            )
+            create_user(db, admin_data)
+            print('✅ Admin créé')
+
+        # Liste des 12 institutions avec leurs IDs
+        institutions = [
+            (1, 'Hôpital Aristide Le Dantec', 'operator@ledantec.sn'),
+            (2, 'Hôpital Principal de Dakar', 'operator@principal.sn'),
+            (3, 'Hôpital Fann', 'operator@fann.sn'),
+            (4, 'Hôpital Abass Ndao', 'operator@abassndao.sn'),
+            (5, 'Clinique Cheikh Zaid', 'operator@cheikh.sn'),
+            (6, 'Mairie Plateau', 'operator@plateau.sn'),
+            (7, 'Mairie Medina', 'operator@medina.sn'),
+            (8, 'Mairie Parcelles Assainies', 'operator@parcelles.sn'),
+            (9, 'Banque BICIS', 'operator@bicis.sn'),
+            (10, 'SGBS Société Générale', 'operator@sgbs.sn'),
+            (11, 'BOA Sénégal', 'operator@boa.sn'),
+            (12, 'Centre DAKAR-BUS', 'operator@dakarbus.sn'),
+        ]
+
+        # Créer un opérateur pour chaque institution
+        for inst_id, inst_name, email in institutions:
+            existing = db.query(User).filter(User.email == email).first()
+            if existing:
+                print(f'✅ Opérateur {inst_name} existe déjà')
+            else:
+                operator_data = UserCreate(
+                    email=email,
+                    password='operator123',
+                    name=f'Opérateur {inst_name}',
+                    role='operator',
+                    institution_id=inst_id
+                )
+                create_user(db, operator_data)
+                print(f'✅ Opérateur créé pour {inst_name}')
+
+        print('\n' + '='*60)
+        print('🎉 TOUS LES UTILISATEURS PAR DÉFAUT CRÉÉS !')
+        print('='*60)
+
+    except Exception as e:
+        print(f'❌ Erreur création utilisateurs: {e}')
+    finally:
+        db.close()

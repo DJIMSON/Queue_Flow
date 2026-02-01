@@ -1,0 +1,113 @@
+═══════════════════════════════════════════════════════════════
+              QUEUEFLOW - COMPTES DISPONIBLES
+═══════════════════════════════════════════════════════════════
+
+📌 IMPORTANT : Ces comptes sont pré-configurés dans l'application
+              Le mot de passe est identique pour tous les opérateurs : op123
+
+═══════════════════════════════════════════════════════════════
+👨‍💼 COMPTE ADMINISTRATEUR
+═══════════════════════════════════════════════════════════════
+Email    : admin@queueflow.com
+Mot de passe : admin123
+Rôle     : Administrateur système
+Accès    : Gestion globale, création d'opérateurs, statistiques
+
+
+═══════════════════════════════════════════════════════════════
+🏥 COMPTES OPÉRATEURS - HÔPITAUX
+═══════════════════════════════════════════════════════════════
+
+1. Hôpital Aristide Le Dantec
+   Email    : operator@ledantec.sn
+   Mot de passe : op123
+
+2. Hôpital Principal de Dakar
+   Email    : operator@principal.sn
+   Mot de passe : op123
+
+3. Hôpital Fann
+   Email    : operator@fann.sn
+   Mot de passe : op123
+
+4. Hôpital Abass Ndao
+   Email    : operator@abassndao.sn
+   Mot de passe : op123
+
+5. Clinique Cheikh Zaid
+   Email    : operator@cheikh.sn
+   Mot de passe : op123
+
+
+═══════════════════════════════════════════════════════════════
+🏛️ COMPTES OPÉRATEURS - MAIRIES
+═══════════════════════════════════════════════════════════════
+
+6. Mairie Plateau
+   Email    : operator@plateau.sn
+   Mot de passe : op123
+
+7. Mairie Medina
+   Email    : operator@medina.sn
+   Mot de passe : op123
+
+8. Mairie Parcelles Assainies
+   Email    : operator@parcelles.sn
+   Mot de passe : op123
+
+
+═══════════════════════════════════════════════════════════════
+🏦 COMPTES OPÉRATEURS - BANQUES
+═══════════════════════════════════════════════════════════════
+
+9. Banque BICIS
+   Email    : operator@bicis.sn
+   Mot de passe : op123
+
+10. SGBS (Société Générale)
+    Email    : operator@sgbs.sn
+    Mot de passe : op123
+
+11. BOA Sénégal
+    Email    : operator@boa.sn
+    Mot de passe : op123
+
+
+═══════════════════════════════════════════════════════════════
+🚌 COMPTES OPÉRATEURS - TRANSPORT
+═══════════════════════════════════════════════════════════════
+
+12. Centre DAKAR-BUS
+    Email    : operator@dakarbus.sn
+    Mot de passe : op123
+
+13. Gare Routière Colobane
+    Email    : operator@colobane.sn
+    Mot de passe : op123
+
+
+═══════════════════════════════════════════════════════════════
+👤 COMPTE UTILISATEUR TEST (CITOYEN)
+═══════════════════════════════════════════════════════════════
+Email    : user@email.com
+Mot de passe : user123
+Rôle     : Citoyen
+Accès    : Création de tickets, consultation de l'historique
+
+
+═══════════════════════════════════════════════════════════════
+📝 NOTES
+═══════════════════════════════════════════════════════════════
+
+• Les utilisateurs finaux doivent créer leur propre compte via le
+  formulaire d'inscription (ils seront automatiquement citoyens)
+
+• Les opérateurs ne peuvent voir que les tickets de leur institution
+
+• L'administrateur a accès à toutes les données et peut créer de
+  nouveaux opérateurs depuis l'interface admin
+
+• Tous les mots de passe peuvent être changés dans une version
+  de production
+
+═══════════════════════════════════════════════════════════════

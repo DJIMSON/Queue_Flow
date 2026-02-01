@@ -1,0 +1,26 @@
+# Dépendances pour QueueFlow Backend
+# Versions compatibles avec Python 3.13 (avec wheels pré-compilées)
+
+# Framework Web - FastAPI
+fastapi==0.115.0
+
+# Serveur ASGI - Pour exécuter FastAPI
+uvicorn[standard]==0.32.0
+
+# Base de données SQLite avec ORM
+sqlalchemy==2.0.36
+
+# Validation de données - Version avec wheel pré-compilé
+pydantic==2.10.0
+
+# Validation des emails - NOUVEAU
+email-validator==2.2.0
+
+# Support CORS - Pour permettre au frontend d'accéder à l'API
+python-multipart==0.0.17
+
+# Gestion des dates et heures
+python-dateutil==2.9.0.post0
+
+# Variables d'environnement (optionnel)
+python-dotenv==1.0.1

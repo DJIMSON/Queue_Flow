@@ -1,0 +1,2214 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QueueFlow - Gestion Files d'Attente</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        /* QueueFlow Pro Color Palette */
+        --primary: #5b7dff;
+        --primary-dark: #32218a;
+        --success: #32b8c6;
+        --danger: #ff5459;
+        --warning: #ff8500;
+        --info: #bb86fc;
+
+        /* Dark backgrounds */
+        --bg-dark: #0f1425;
+        --bg-card: #1a1f3a;
+        --bg-hover: #252d45;
+
+        /* Text colors */
+        --text-primary: #f5f5f5;
+        --text-secondary: #a7a9a9;
+        --gray-200: #e5e7eb;
+        --gray-300: #d1d5db;
+        --gray-600: #4b5563;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        background: var(--bg-dark);
+        color: var(--text-primary);
+        line-height: 1.6;
+      }
+
+      /* ===== AUTH PAGES ===== */
+      .auth-page {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #0f1425 0%, #1a2854 100%);
+        padding: 1rem;
+      }
+
+      .auth-container {
+        background: var(--bg-card);
+        border: 1px solid rgba(91, 125, 255, 0.2);
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        width: 100%;
+        max-width: 420px;
+        padding: 2.5rem;
+      }
+
+      .auth-header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .auth-logo {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+      }
+
+      .auth-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+      }
+
+      .auth-subtitle {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 0.9rem;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border: 1.5px solid rgba(91, 125, 255, 0.3);
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        font-size: 1rem;
+        color: var(--text-primary);
+        transition: all 0.3s;
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(91, 125, 255, 0.2);
+      }
+
+      select.form-control {
+        cursor: pointer;
+      }
+
+      .btn-auth {
+        width: 100%;
+        padding: 1rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        background: linear-gradient(135deg, var(--primary) 0%, #32218a 100%);
+        color: white;
+        margin-bottom: 1rem;
+      }
+
+      .btn-auth:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(91, 125, 255, 0.4);
+      }
+
+      .auth-link {
+        text-align: center;
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+      }
+
+      .auth-link a {
+        color: var(--primary);
+        cursor: pointer;
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .auth-link a:hover {
+        text-decoration: underline;
+      }
+
+      .auth-info {
+        background: rgba(50, 184, 198, 0.1);
+        border-left: 4px solid var(--success);
+        padding: 1rem;
+        border-radius: 6px;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+      }
+
+      /* ===== MAIN APP ===== */
+      .app-wrapper {
+        display: flex;
+        min-height: 100vh;
+      }
+
+      .app-header {
+        background: linear-gradient(135deg, var(--primary) 0%, #32218a 100%);
+        color: white;
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 100;
+      }
+
+      .app-logo {
+        font-size: 1.5rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .app-header-right {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+      }
+
+      .user-display {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.95rem;
+      }
+
+      .user-badge {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+
+      .btn-logout {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s;
+      }
+
+      .btn-logout:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      .app-container {
+        display: flex;
+        margin-top: 70px;
+        flex: 1;
+      }
+
+      .app-sidebar {
+        width: 250px;
+        background: var(--bg-card);
+        border-right: 1px solid rgba(91, 125, 255, 0.15);
+        padding: 1.5rem 0;
+        overflow-y: auto;
+        max-height: calc(100vh - 70px);
+      }
+
+      .sidebar-item {
+        padding: 1rem 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        color: var(--text-secondary);
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        border-left: 3px solid transparent;
+      }
+
+      .sidebar-item:hover {
+        background: rgba(91, 125, 255, 0.1);
+        color: var(--primary);
+      }
+
+      .sidebar-item.active {
+        background: rgba(91, 125, 255, 0.15);
+        color: var(--primary);
+        border-left-color: var(--primary);
+      }
+
+      .app-content {
+        flex: 1;
+        padding: 2rem;
+        overflow-y: auto;
+        max-height: calc(100vh - 70px);
+        background: var(--bg-dark);
+      }
+
+      /* ===== CARDS ===== */
+      .card {
+        background: var(--bg-card);
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(91, 125, 255, 0.15);
+      }
+
+      .card-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        color: var(--text-primary);
+      }
+
+      .page {
+        display: none;
+      }
+
+      .page.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ===== GRID ===== */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      /* Institution & Service Selectors */
+      .institution-types-grid,
+      .institution-list-grid,
+      .service-list-grid,
+      .time-list-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .selector-card {
+        background: var(--bg-card);
+        border: 2px solid rgba(91, 125, 255, 0.2);
+        border-radius: 12px;
+        padding: 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .selector-card:hover {
+        border-color: var(--primary);
+        box-shadow: 0 8px 20px rgba(91, 125, 255, 0.2);
+        transform: translateY(-4px);
+      }
+
+      .selector-card.selected {
+        background: linear-gradient(135deg, var(--primary) 0%, #32218a 100%);
+        border-color: var(--primary);
+        color: white;
+        box-shadow: 0 8px 24px rgba(91, 125, 255, 0.4);
+      }
+
+      .selector-card-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .selector-card-title {
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .selector-card-subtitle {
+        font-size: 0.8rem;
+        opacity: 0.7;
+      }
+
+      .time-slot {
+        padding: 1rem;
+        border: 1.5px solid;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        font-weight: 600;
+      }
+
+      .time-slot.available-green {
+        border-color: #32b8c6;
+        background: rgba(50, 184, 198, 0.1);
+        color: #32b8c6;
+      }
+
+      .time-slot.available-green:hover {
+        background: rgba(50, 184, 198, 0.2);
+        transform: translateY(-4px);
+        box-shadow: 0 4px 12px rgba(50, 184, 198, 0.3);
+      }
+
+      .time-slot.available-orange {
+        border-color: #ff8500;
+        background: rgba(255, 133, 0, 0.1);
+        color: #ff8500;
+      }
+
+      .time-slot.available-orange:hover {
+        background: rgba(255, 133, 0, 0.2);
+        transform: translateY(-4px);
+        box-shadow: 0 4px 12px rgba(255, 133, 0, 0.3);
+      }
+
+      .time-slot.unavailable {
+        border-color: rgba(255, 84, 89, 0.3);
+        background: rgba(255, 84, 89, 0.05);
+        color: rgba(255, 84, 89, 0.5);
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+
+      .time-slot.selected {
+        background: linear-gradient(135deg, var(--primary) 0%, #32218a 100%);
+        color: white;
+        border-color: var(--primary);
+        box-shadow: 0 6px 16px rgba(91, 125, 255, 0.4);
+      }
+
+      .load-indicator {
+        padding: 1rem;
+        border-radius: 10px;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-left: 3px solid;
+      }
+
+      .load-indicator.light {
+        background: rgba(50, 184, 198, 0.1);
+        border-left-color: #32b8c6;
+        color: #32b8c6;
+      }
+
+      .load-indicator.medium {
+        background: rgba(255, 133, 0, 0.1);
+        border-left-color: #ff8500;
+        color: #ff8500;
+      }
+
+      .load-indicator.heavy {
+        background: rgba(255, 84, 89, 0.1);
+        border-left-color: #ff5459;
+        color: #ff5459;
+      }
+
+      .stat-card {
+        background: linear-gradient(135deg, var(--primary) 0%, #32218a 100%);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(91, 125, 255, 0.3);
+      }
+
+      .stat-card[style*="background: linear-gradient(135deg, 10b981"] {
+        background: linear-gradient(
+          135deg,
+          var(--success) 0%,
+          #1f8b96 100%
+        ) !important;
+      }
+
+      .stat-card[style*="background: linear-gradient(135deg, ef4444"] {
+        background: linear-gradient(
+          135deg,
+          var(--danger) 0%,
+          #c73a41 100%
+        ) !important;
+      }
+
+      .stat-card[style*="background: linear-gradient(135deg, f59e0b"] {
+        background: linear-gradient(
+          135deg,
+          var(--warning) 0%,
+          #cc6b00 100%
+        ) !important;
+      }
+
+      .stat-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 0.5rem 0;
+      }
+
+      .stat-label {
+        opacity: 0.9;
+        font-size: 0.9rem;
+      }
+
+      /* ===== TICKET ===== */
+      .ticket {
+        background: linear-gradient(135deg, #32b8c6 0%, #1a9ba8 100%);
+        color: white;
+        padding: 2.5rem;
+        border-radius: 16px;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 12px 40px rgba(50, 184, 198, 0.25);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s ease;
+      }
+
+      .ticket:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 50px rgba(50, 184, 198, 0.35);
+      }
+
+      .ticket::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.15),
+          transparent
+        );
+        border-radius: 50%;
+        animation: float 6s ease-in-out infinite;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translate(0, 0);
+        }
+        50% {
+          transform: translate(20px, -20px);
+        }
+      }
+
+      .ticket-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1.5rem;
+        position: relative;
+        z-index: 1;
+      }
+
+      .ticket-status-badge {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .ticket-number {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin: 0.5rem 0;
+        font-family: "Courier New", monospace;
+        letter-spacing: 6px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .ticket-number-label {
+        font-size: 0.9rem;
+        opacity: 0.85;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 0.5rem;
+      }
+
+      .ticket-info {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 1.2rem;
+        margin-top: 1.5rem;
+        position: relative;
+        z-index: 1;
+      }
+
+      .ticket-info-item {
+        background: rgba(255, 255, 255, 0.12);
+        padding: 1.25rem;
+        border-radius: 12px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+      }
+
+      .ticket-info-item:hover {
+        background: rgba(255, 255, 255, 0.18);
+        transform: translateY(-4px);
+      }
+
+      .ticket-info-label {
+        font-size: 0.8rem;
+        opacity: 0.8;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+      }
+
+      .ticket-info-value {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-top: 0.5rem;
+      }
+
+      .ticket-tolerance {
+        background: rgba(255, 255, 255, 0.12);
+        padding: 0.75rem 1rem;
+        border-radius: 10px;
+        border-left: 3px solid rgba(255, 255, 255, 0.3);
+        font-size: 0.9rem;
+        margin-top: 1rem;
+        position: relative;
+        z-index: 1;
+      }
+
+      .ticket-tolerance-label {
+        font-size: 0.75rem;
+        opacity: 0.7;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .ticket-tolerance-value {
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin-top: 0.25rem;
+      }
+
+      /* ===== TABLES ===== */
+      .table-responsive {
+        overflow-x: auto;
+        margin-bottom: 1rem;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--bg-card);
+      }
+
+      th {
+        background: rgba(91, 125, 255, 0.15);
+        color: var(--text-primary);
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        font-size: 0.9rem;
+        border-bottom: 2px solid rgba(91, 125, 255, 0.3);
+      }
+
+      td {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(91, 125, 255, 0.1);
+        color: var(--text-secondary);
+      }
+
+      tr:hover {
+        background: rgba(91, 125, 255, 0.08);
+      }
+
+      /* ===== BADGES ===== */
+      .badge {
+        display: inline-block;
+        padding: 0.375rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+      }
+
+      .badge-success {
+        background: rgba(50, 184, 198, 0.2);
+        color: var(--success);
+      }
+
+      .badge-danger {
+        background: rgba(255, 84, 89, 0.2);
+        color: var(--danger);
+      }
+
+      .badge-warning {
+        background: rgba(255, 133, 0, 0.2);
+        color: var(--warning);
+      }
+
+      .badge-info {
+        background: rgba(187, 134, 252, 0.2);
+        color: var(--info);
+      }
+
+      /* ===== ALERTS ===== */
+      .alert {
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        border-left: 4px solid;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+      }
+
+      .alert-success {
+        background: rgba(50, 184, 198, 0.1);
+        border-left-color: var(--success);
+        color: var(--success);
+      }
+
+      .alert-danger {
+        background: rgba(255, 84, 89, 0.1);
+        border-left-color: var(--danger);
+        color: var(--danger);
+      }
+
+      .alert-warning {
+        background: rgba(255, 133, 0, 0.1);
+        border-left-color: var(--warning);
+        color: var(--warning);
+      }
+
+      .alert-info {
+        background: rgba(187, 134, 252, 0.1);
+        border-left-color: var(--info);
+        color: var(--info);
+      }
+
+      /* ===== BUTTONS ===== */
+      .btn-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .btn-action {
+        padding: 0.875rem 1.25rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #32218a;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(91, 125, 255, 0.4);
+      }
+
+      .btn-success {
+        background: var(--success);
+        color: white;
+      }
+
+      .btn-success:hover {
+        background: #1f8b96;
+        transform: translateY(-2px);
+      }
+
+      .btn-danger {
+        background: var(--danger);
+        color: white;
+      }
+
+      .btn-danger:hover {
+        background: #c73a41;
+      }
+
+      .btn-warning {
+        background: var(--warning);
+        color: white;
+      }
+
+      .btn-warning:hover {
+        background: #cc6b00;
+      }
+
+      .btn-secondary {
+        background: rgba(91, 125, 255, 0.15);
+        color: var(--text-primary);
+      }
+
+      .btn-secondary:hover {
+        background: rgba(91, 125, 255, 0.25);
+      }
+
+      .btn-sm {
+        padding: 0.5rem 0.875rem;
+        font-size: 0.85rem;
+      }
+
+      /* ===== PROGRESS ===== */
+      .progress {
+        height: 8px;
+        background: rgba(91, 125, 255, 0.1);
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 0.5rem;
+      }
+
+      .progress-bar {
+        height: 100%;
+        background: var(--success);
+        width: 0%;
+        transition: width 0.3s;
+      }
+
+      /* ===== RESPONSIVE ===== */
+      @media (max-width: 768px) {
+        .app-sidebar {
+          width: 100%;
+          border-right: none;
+          border-bottom: 1px solid rgba(91, 125, 255, 0.15);
+          padding: 0.5rem;
+          display: flex;
+          overflow-x: auto;
+          max-height: auto;
+        }
+
+        .sidebar-item {
+          white-space: nowrap;
+          flex-shrink: 0;
+        }
+
+        .app-container {
+          flex-direction: column;
+          margin-top: 70px;
+        }
+
+        .app-content {
+          max-height: auto;
+        }
+
+        .ticket-number {
+          font-size: 2.5rem;
+          letter-spacing: 4px;
+        }
+
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .hidden {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- LOGIN PAGE -->
+    <div id="loginPage" class="auth-page">
+      <div class="auth-container">
+        <div class="auth-header">
+          <div class="auth-logo">📊</div>
+          <div class="auth-title">QueueFlow</div>
+          <div class="auth-subtitle">Gestion Files d'Attente</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input
+            type="email"
+            id="loginEmail"
+            class="form-control"
+            placeholder="votre@email.com"
+            value="user@email.com"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Mot de passe</label>
+          <input
+            type="password"
+            id="loginPassword"
+            class="form-control"
+            placeholder="•••••••"
+            value="user123"
+          />
+        </div>
+
+        <button class="btn-auth" onclick="login()">Se connecter</button>
+
+        <div class="auth-link">
+          Pas encore inscrit? <a onclick="toggleSignup()">Créer un compte</a>
+        </div>
+
+        <div class="auth-info" style="margin-top: 1rem">
+          <strong>Comptes de test:</strong><br />
+          <small>
+            <strong>Admin</strong> admin@queueflow.com / admin123<br />
+            <strong>Opérateur</strong> operator1@hopital.sn / op123<br />
+            <strong>Utilisateur</strong> user@email.com / user123
+          </small>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIGNUP PAGE -->
+    <div id="signupPage" class="auth-page hidden">
+      <div class="auth-container">
+        <div class="auth-header">
+          <div class="auth-logo">📊</div>
+          <div class="auth-title">Créer un Compte</div>
+          <div class="auth-subtitle">QueueFlow</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Nom complet</label>
+          <input
+            type="text"
+            id="signupName"
+            class="form-control"
+            placeholder="Votre nom"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input
+            type="email"
+            id="signupEmail"
+            class="form-control"
+            placeholder="votre@email.com"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Mot de passe</label>
+          <input
+            type="password"
+            id="signupPassword"
+            class="form-control"
+            placeholder="••••••"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Rôle</label>
+          <select id="signupRole" class="form-control">
+            <option value="">-- Sélectionnez --</option>
+            <option value="citizen">Citoyen</option>
+            <option value="operator">Opérateur</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="institutionGroup" style="display: none">
+          <label class="form-label">Institution</label>
+          <select id="signupInstitution" class="form-control"></select>
+        </div>
+
+        <button class="btn-auth" onclick="signup()">Créer un Compte</button>
+
+        <div class="auth-link">
+          Déjà inscrit? <a onclick="toggleSignup()">Se connecter</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="appPage" class="app-wrapper hidden">
+      <!-- HEADER -->
+      <div class="app-header">
+        <div class="app-logo">📊 QueueFlow</div>
+        <div class="app-header-right">
+          <div class="user-display">
+            <span id="userRole" class="user-badge"></span>
+            <span id="userEmail"></span>
+          </div>
+          <button class="btn-logout" onclick="logout()">Déconnexion</button>
+        </div>
+      </div>
+
+      <div class="app-container">
+        <!-- SIDEBAR -->
+        <div class="app-sidebar" id="sidebar"></div>
+
+        <!-- CONTENT -->
+        <div class="app-content" id="contentArea"></div>
+      </div>
+    </div>
+
+    <script>
+      // STATE
+      let currentUser = null;
+      let users = {};
+      let allTickets = [];
+
+      // Mock Data - Enhanced with real Dakar institutions
+      const institutions = [
+        // Hôpitaux de Dakar
+        {
+          id: 1,
+          name: "Hôpital Aristide Le Dantec",
+          city: "Dakar",
+          type: "Hôpital",
+        },
+        {
+          id: 2,
+          name: "Hôpital Principal de Dakar",
+          city: "Dakar",
+          type: "Hôpital",
+        },
+        { id: 3, name: "Hôpital Fann", city: "Dakar", type: "Hôpital" },
+        { id: 4, name: "Hôpital Abass Ndao", city: "Dakar", type: "Hôpital" },
+        { id: 5, name: "Clinique Cheikh Zaid", city: "Dakar", type: "Hôpital" },
+
+        // Mairies
+        { id: 6, name: "Mairie Plateau", city: "Dakar", type: "Mairie" },
+        { id: 7, name: "Mairie Medina", city: "Dakar", type: "Mairie" },
+        {
+          id: 8,
+          name: "Mairie Parcelles Assainies",
+          city: "Dakar",
+          type: "Mairie",
+        },
+
+        // Banques
+        { id: 9, name: "Banque BICIS", city: "Dakar", type: "Banque" },
+        {
+          id: 10,
+          name: "SGBS (Société Générale)",
+          city: "Dakar",
+          type: "Banque",
+        },
+        { id: 11, name: "BOA Sénégal", city: "Dakar", type: "Banque" },
+
+        // Transport
+        { id: 12, name: "Centre DAKAR-BUS", city: "Dakar", type: "Transport" },
+        {
+          id: 13,
+          name: "Gare Routière Colobane",
+          city: "Dakar",
+          type: "Transport",
+        },
+      ];
+
+      const services = [
+        // Services Hôpital Aristide Le Dantec (id: 1)
+        { id: 1, name: "Consultations Générales", institution: 1, avgTime: 15 },
+        { id: 2, name: "Urgences", institution: 1, avgTime: 20 },
+        { id: 3, name: "Cardiologie", institution: 1, avgTime: 25 },
+        { id: 4, name: "Pédiatrie", institution: 1, avgTime: 18 },
+        { id: 5, name: "Chirurgie", institution: 1, avgTime: 30 },
+        { id: 6, name: "Radiologie", institution: 1, avgTime: 20 },
+
+        // Services Hôpital Principal de Dakar (id: 2)
+        { id: 7, name: "Consultations Générales", institution: 2, avgTime: 15 },
+        { id: 8, name: "Dermatologie", institution: 2, avgTime: 22 },
+        { id: 9, name: "Gynécologie", institution: 2, avgTime: 25 },
+        { id: 10, name: "Laboratoire d'Analyses", institution: 2, avgTime: 10 },
+        { id: 11, name: "Pharmacie", institution: 2, avgTime: 8 },
+
+        // Services Hôpital Fann (id: 3)
+        {
+          id: 12,
+          name: "Consultations Générales",
+          institution: 3,
+          avgTime: 15,
+        },
+        { id: 13, name: "Psychiatrie", institution: 3, avgTime: 30 },
+        { id: 14, name: "Neurologie", institution: 3, avgTime: 25 },
+        { id: 15, name: "Urgences", institution: 3, avgTime: 20 },
+
+        // Services Hôpital Abass Ndao (id: 4)
+        {
+          id: 16,
+          name: "Consultations Générales",
+          institution: 4,
+          avgTime: 15,
+        },
+        { id: 17, name: "Oncologie", institution: 4, avgTime: 35 },
+        { id: 18, name: "Hématologie", institution: 4, avgTime: 20 },
+        { id: 19, name: "Urgences", institution: 4, avgTime: 20 },
+
+        // Services Clinique Cheikh Zaid (id: 5)
+        {
+          id: 20,
+          name: "Consultations Générales",
+          institution: 5,
+          avgTime: 15,
+        },
+        { id: 21, name: "Ophtalmologie", institution: 5, avgTime: 20 },
+        { id: 22, name: "ORL", institution: 5, avgTime: 18 },
+        { id: 23, name: "Dentisterie", institution: 5, avgTime: 25 },
+
+        // Services Mairie Plateau (id: 6)
+        { id: 24, name: "Etat Civil", institution: 6, avgTime: 10 },
+        { id: 25, name: "Permis de Construire", institution: 6, avgTime: 30 },
+        { id: 26, name: "Impôts et Taxes", institution: 6, avgTime: 20 },
+        { id: 27, name: "Actes Notariés", institution: 6, avgTime: 25 },
+
+        // Services Mairie Medina (id: 7)
+        { id: 28, name: "Etat Civil", institution: 7, avgTime: 10 },
+        { id: 29, name: "Permis de Conduire", institution: 7, avgTime: 20 },
+        { id: 30, name: "Passeport", institution: 7, avgTime: 25 },
+
+        // Services Mairie Parcelles Assainies (id: 8)
+        { id: 31, name: "Etat Civil", institution: 8, avgTime: 10 },
+        { id: 32, name: "Impôts Locaux", institution: 8, avgTime: 15 },
+        { id: 33, name: "Urbanisme", institution: 8, avgTime: 30 },
+
+        // Services Banque BICIS (id: 9)
+        { id: 34, name: "Ouverture de Compte", institution: 9, avgTime: 20 },
+        { id: 35, name: "Services Bancaires", institution: 9, avgTime: 15 },
+        { id: 36, name: "Crédit et Financement", institution: 9, avgTime: 30 },
+        { id: 37, name: "Conseil Financier", institution: 9, avgTime: 25 },
+
+        // Services SGBS (id: 10)
+        { id: 38, name: "Ouverture de Compte", institution: 10, avgTime: 20 },
+        {
+          id: 39,
+          name: "Virements Internationaux",
+          institution: 10,
+          avgTime: 18,
+        },
+        { id: 40, name: "Placement Financier", institution: 10, avgTime: 25 },
+
+        // Services BOA Sénégal (id: 11)
+        { id: 41, name: "Ouverture de Compte", institution: 11, avgTime: 20 },
+        { id: 42, name: "Services Bancaires", institution: 11, avgTime: 15 },
+        { id: 43, name: "Épargne et Placements", institution: 11, avgTime: 22 },
+
+        // Services Centre DAKAR-BUS (id: 12)
+        {
+          id: 44,
+          name: "Billets et Réservations",
+          institution: 12,
+          avgTime: 10,
+        },
+        { id: 45, name: "Enregistrement Bagages", institution: 12, avgTime: 8 },
+        { id: 46, name: "Infos Horaires", institution: 12, avgTime: 5 },
+
+        // Services Gare Routière Colobane (id: 13)
+        { id: 47, name: "Billets Interurbains", institution: 13, avgTime: 10 },
+        { id: 48, name: "Information Trajets", institution: 13, avgTime: 5 },
+        { id: 49, name: "Réclamations Bagages", institution: 13, avgTime: 15 },
+      ];
+
+      // Initialize users
+      function initializeUsers() {
+        users = {
+          "admin@queueflow.com": {
+            password: "admin123",
+            role: "admin",
+            name: "Administrateur",
+          },
+          "operator1@hopital.sn": {
+            password: "op123",
+            role: "operator",
+            name: "Opérateur Hôpital",
+            institution: 1,
+          },
+          "operator2@mairie.sn": {
+            password: "op123",
+            role: "operator",
+            name: "Opérateur Mairie",
+            institution: 2,
+          },
+          "user@email.com": {
+            password: "user123",
+            role: "citizen",
+            name: "Utilisateur",
+          },
+        };
+      }
+
+      // Generate mock tickets
+      function generateMockTickets() {
+        const now = new Date();
+        let id = 1;
+
+        for (let i = 20; i >= 0; i--) {
+          const date = new Date(now);
+          date.setDate(date.getDate() - i);
+          const dateStr = date.toISOString().split("T")[0];
+          const count = i === 0 ? 6 : Math.floor(Math.random() * 10) + 3;
+
+          for (let j = 0; j < count; j++) {
+            const service =
+              services[Math.floor(Math.random() * services.length)];
+            const h = 8 + Math.floor(Math.random() * 8);
+            const m = Math.floor(Math.random() * 4) * 15;
+            const time =
+              String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
+
+            let status = "treated";
+            if (i === 0) {
+              const r = Math.random();
+              status =
+                r < 0.2 ? "waiting" : r < 0.4 ? "beingtreated" : "treated";
+            } else if (Math.random() < 0.1) {
+              status = "missed";
+            }
+
+            allTickets.push({
+              id: id,
+              ticketNumber: String(id).padStart(5, "0"),
+              service: service.name,
+              institution: service.institution,
+              institutionName: institutions.find(
+                (x) => x.id === service.institution,
+              ).name,
+              date: dateStr,
+              scheduledTime: time,
+              status: status,
+              position: Math.floor(Math.random() * 8) + 1,
+            });
+            id++;
+          }
+        }
+      }
+
+      // AUTHENTICATION
+      function toggleSignup() {
+        document.getElementById("loginPage").classList.toggle("hidden");
+        document.getElementById("signupPage").classList.toggle("hidden");
+
+        if (
+          !document.getElementById("signupPage").classList.contains("hidden")
+        ) {
+          populateInstitutions();
+        }
+      }
+
+      function populateInstitutions() {
+        const select = document.getElementById("signupInstitution");
+        select.innerHTML = '<option value="">-- Sélectionnez --</option>';
+        institutions.forEach((i) => {
+          select.innerHTML += `<option value="${i.id}">${i.name}</option>`;
+        });
+
+        document
+          .getElementById("signupRole")
+          ?.addEventListener("change", function (e) {
+            const group = document.getElementById("institutionGroup");
+            if (e.target.value === "operator") {
+              group.style.display = "block";
+            } else {
+              group.style.display = "none";
+            }
+          });
+      }
+
+      function login() {
+        const email = document.getElementById("loginEmail").value;
+        const password = document.getElementById("loginPassword").value;
+
+        if (!email || !password) {
+          alert("Remplissez tous les champs");
+          return;
+        }
+
+        if (users[email] && users[email].password === password) {
+          currentUser = { email, ...users[email] };
+          document.getElementById("loginPage").classList.add("hidden");
+          document.getElementById("signupPage").classList.add("hidden");
+          document.getElementById("appPage").classList.remove("hidden");
+          renderApp();
+          showAlert("Connexion réussie!", "success");
+        } else {
+          alert("Email ou mot de passe incorrect");
+        }
+      }
+
+      function signup() {
+        const name = document.getElementById("signupName").value;
+        const email = document.getElementById("signupEmail").value;
+        const password = document.getElementById("signupPassword").value;
+        const role = document.getElementById("signupRole").value;
+        const institution = document.getElementById("signupInstitution").value;
+
+        if (!name || !email || !password || !role) {
+          alert("Remplissez tous les champs");
+          return;
+        }
+
+        if (role === "operator" && !institution) {
+          alert("Sélectionnez une institution");
+          return;
+        }
+
+        if (users[email]) {
+          alert("Cet email existe déjà");
+          return;
+        }
+
+        users[email] = {
+          password,
+          role,
+          name,
+          institution: role === "operator" ? parseInt(institution) : null,
+        };
+
+        showAlert("Compte créé! Connectez-vous", "success");
+        toggleSignup();
+        document.getElementById("loginEmail").value = email;
+        document.getElementById("loginPassword").value = password;
+      }
+
+      function logout() {
+        currentUser = null;
+        document.getElementById("appPage").classList.add("hidden");
+        document.getElementById("loginPage").classList.remove("hidden");
+        document.getElementById("loginEmail").value = "";
+        document.getElementById("loginPassword").value = "";
+      }
+
+      // APP RENDERING
+      function renderApp() {
+        const roleLabels = {
+          citizen: "Citoyen",
+          operator: "Opérateur",
+          admin: "Admin",
+        };
+
+        document.getElementById("userRole").textContent =
+          roleLabels[currentUser.role];
+        document.getElementById("userEmail").textContent = currentUser.email;
+
+        const sidebar = document.getElementById("sidebar");
+        sidebar.innerHTML = "";
+
+        if (currentUser.role === "citizen") {
+          renderCitizen();
+        } else if (currentUser.role === "operator") {
+          renderOperator();
+        } else if (currentUser.role === "admin") {
+          renderAdmin();
+        }
+      }
+
+      function addSidebarItem(label, icon, pageId) {
+        const item = document.createElement("div");
+        item.className = "sidebar-item";
+        item.textContent = icon + " " + label;
+        item.onclick = () => {
+          showPage(pageId);
+          document
+            .querySelectorAll(".sidebar-item")
+            .forEach((i) => i.classList.remove("active"));
+          item.classList.add("active");
+        };
+        document.getElementById("sidebar").appendChild(item);
+      }
+
+      function showPage(pageId) {
+        document
+          .querySelectorAll(".page")
+          .forEach((p) => p.classList.remove("active"));
+        document.getElementById(pageId).classList.add("active");
+      }
+
+      // CITIZEN INTERFACE
+      function renderCitizen() {
+        addSidebarItem("Mon Ticket", "🎫", "citizenTicketPage");
+        addSidebarItem("Créer Ticket", "➕", "citizenCreatePage");
+        addSidebarItem("Historique", "📜", "citizenHistoryPage");
+
+        const content = document.getElementById("contentArea");
+        content.innerHTML = "";
+
+        // Initialize institution types
+        setTimeout(() => {
+          renderInstitutionTypes();
+        }, 100);
+
+        // Ticket Page
+        const ticketPage = document.createElement("div");
+        ticketPage.id = "citizenTicketPage";
+        ticketPage.className = "page active";
+        ticketPage.innerHTML = `
+                <div class="card">
+                    <div class="card-title">🎫 Mon Ticket Actif</div>
+                    <div id="citizenTicketDisplay"></div>
+                </div>
+            `;
+
+        // Create Page
+        const createPage = document.createElement("div");
+        createPage.id = "citizenCreatePage";
+        createPage.className = "page";
+        createPage.innerHTML = `
+                <div class="card">
+                    <div class="card-title">➕ Créer un Nouveau Ticket</div>
+                    <div id="selectedPathDisplay" style="margin-bottom: 1.5rem; padding: 1rem; background: rgba(91, 125, 255, 0.1); border-radius: 8px; border-left: 3px solid var(--primary); display: none;">
+                        <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Votre parcours:</div>
+                        <div id="selectedPath" style="font-weight: 600; color: var(--text-primary);"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Type d'Institution</label>
+                        <div id="institutionTypesContainer" class="institution-types-grid"></div>
+                    </div>
+
+                    <div class="form-group" id="institutionSelectGroup" style="display: none;">
+                        <label class="form-label">Sélectionnez votre Institution</label>
+                        <div id="institutionListContainer" class="institution-list-grid"></div>
+                    </div>
+
+                    <div class="form-group" id="serviceSelectGroup" style="display: none;">
+                        <label class="form-label">Choisir un Service</label>
+                        <div id="serviceListContainer" class="service-list-grid"></div>
+                    </div>
+
+                    <div class="form-group" id="timeSelectGroup" style="display: none;">
+                        <label class="form-label">Créneau horaire disponible</label>
+                        <div id="timeListContainer" class="time-list-grid"></div>
+                        <div id="loadIndicator" style="margin-top: 1rem;"></div>
+                    </div>
+
+                    <button class="btn-action btn-primary" onclick="createCitizenTicket()">Créer mon Ticket</button>
+                </div>
+            `;
+
+        // History Page
+        const historyPage = document.createElement("div");
+        historyPage.id = "citizenHistoryPage";
+        historyPage.className = "page";
+        historyPage.innerHTML = `
+                <div class="card">
+                    <div class="card-title">📜 Historique Tickets</div>
+                    <div id="citizenHistoryDisplay"></div>
+                </div>
+            `;
+
+        content.appendChild(ticketPage);
+        content.appendChild(createPage);
+        content.appendChild(historyPage);
+
+        updateCitizenDisplay();
+      }
+
+      function generateTimeSlots() {
+        const slots = [];
+        for (let h = 8; h < 16; h++) {
+          for (let m = 0; m < 60; m += 30) {
+            slots.push(
+              String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0"),
+            );
+          }
+        }
+        return slots;
+      }
+
+      // Smart Load Balancing
+      let selectedInstitution = null;
+      let selectedService = null;
+      let selectedTime = null;
+
+      const institutionTypes = {
+        hopital: { icon: "🏥", label: "Hôpitaux", color: "#32b8c6" },
+        mairie: { icon: "🏛️", label: "Mairies", color: "#5b7dff" },
+        banque: { icon: "🏦", label: "Banques", color: "#bb86fc" },
+        transport: { icon: "🚌", label: "Transport", color: "#ff8500" },
+      };
+
+      function getInstitutionType(name) {
+        if (name.includes("Hôpital")) return "hopital";
+        if (name.includes("Mairie")) return "mairie";
+        if (name.includes("Banque")) return "banque";
+        if (name.includes("BUS")) return "transport";
+        return "hopital";
+      }
+
+      function renderInstitutionTypes() {
+        const types = new Set(
+          institutions.map((i) => getInstitutionType(i.name)),
+        );
+        const container = document.getElementById("institutionTypesContainer");
+
+        container.innerHTML = Array.from(types)
+          .map(
+            (type) => `
+                <div class="selector-card" onclick="selectInstitutionType('${type}')">
+                    <div class="selector-card-icon">${institutionTypes[type].icon}</div>
+                    <div class="selector-card-title">${institutionTypes[type].label}</div>
+                    <div class="selector-card-subtitle">${institutions.filter((i) => getInstitutionType(i.name) === type).length} établissements</div>
+                </div>
+            `,
+          )
+          .join("");
+      }
+
+      function selectInstitutionType(type) {
+        document
+          .querySelectorAll("#institutionTypesContainer .selector-card")
+          .forEach((c) => c.classList.remove("selected"));
+        event.target.closest(".selector-card").classList.add("selected");
+
+        selectedInstitutionType = type;
+        const filtered = institutions.filter(
+          (i) => getInstitutionType(i.name) === type,
+        );
+        const container = document.getElementById("institutionListContainer");
+
+        // Group institutions by section header
+        container.innerHTML = `
+                <div style="grid-column: 1 / -1; margin-bottom: 1rem;">
+                    <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 1rem;">
+                        ${institutionTypes[type].label}
+                    </h3>
+                </div>
+                ${filtered
+                  .map(
+                    (i) => `
+                    <div class="selector-card" onclick="selectInstitution(${i.id})">
+                        <div class="selector-card-icon">📍</div>
+                        <div class="selector-card-title">${i.name}</div>
+                        <div class="selector-card-subtitle">${i.city}</div>
+                    </div>
+                `,
+                  )
+                  .join("")}
+            `;
+
+        document.getElementById("institutionSelectGroup").style.display =
+          "block";
+        document.getElementById("serviceSelectGroup").style.display = "none";
+        document.getElementById("timeSelectGroup").style.display = "none";
+        updateSelectedPath();
+      }
+
+      let selectedInstitutionType = null;
+
+      function selectInstitution(instId) {
+        selectedInstitution = instId;
+        document
+          .querySelectorAll("#institutionListContainer .selector-card")
+          .forEach((c) => c.classList.remove("selected"));
+        event.target.closest(".selector-card").classList.add("selected");
+
+        const inst = institutions.find((i) => i.id === instId);
+        const filtered = services.filter((s) => s.institution === instId);
+        const container = document.getElementById("serviceListContainer");
+
+        // Show institution name as section header
+        container.innerHTML = `
+                <div style="grid-column: 1 / -1; margin-bottom: 1rem;">
+                    <h3 style="color: var(--success); font-size: 1.1rem; margin-bottom: 1rem;">
+                        ${inst.name}
+                    </h3>
+                </div>
+                ${filtered
+                  .map((s) => {
+                    const ticketsForService = allTickets.filter(
+                      (t) =>
+                        t.date === new Date().toISOString().split("T")[0] &&
+                        t.service === s.name,
+                    ).length;
+                    const capacity = 30;
+                    const occupancy = Math.round(
+                      (ticketsForService / capacity) * 100,
+                    );
+
+                    return `
+                        <div class="selector-card" onclick="selectService(${s.id})">
+                            <div class="selector-card-icon">🔧</div>
+                            <div class="selector-card-title">${s.name}</div>
+                            <div class="selector-card-subtitle">${occupancy}% occupé</div>
+                        </div>
+                    `;
+                  })
+                  .join("")}
+            `;
+
+        document.getElementById("serviceSelectGroup").style.display = "block";
+        document.getElementById("timeSelectGroup").style.display = "none";
+        updateSelectedPath();
+      }
+
+      function selectService(svcId) {
+        selectedService = svcId;
+        document
+          .querySelectorAll("#serviceListContainer .selector-card")
+          .forEach((c) => c.classList.remove("selected"));
+        event.target.closest(".selector-card").classList.add("selected");
+
+        const svc = services.find((s) => s.id === svcId);
+        renderTimeSlots(svc);
+
+        document.getElementById("timeSelectGroup").style.display = "block";
+        updateSelectedPath();
+      }
+
+      function renderTimeSlots(service) {
+        const today = new Date().toISOString().split("T")[0];
+        const capacity = 30;
+        const container = document.getElementById("timeListContainer");
+        const slots = generateTimeSlots();
+
+        container.innerHTML = slots
+          .map((time) => {
+            const ticketsForSlot = allTickets.filter(
+              (t) =>
+                t.date === today &&
+                t.service === service.name &&
+                t.scheduledTime === time,
+            ).length;
+
+            const occupancy = Math.round((ticketsForSlot / capacity) * 100);
+            let status = "available-green";
+            let statusText = "✓ Disponible";
+
+            if (occupancy > 80) {
+              status = "unavailable";
+              statusText = "Complet";
+            } else if (occupancy > 60) {
+              status = "available-orange";
+              statusText = "⚠ Presque plein";
+            } else {
+              statusText = `${capacity - ticketsForSlot} places`;
+            }
+
+            return `
+                    <div class="time-slot ${status}" onclick="selectTime('${time}')" ${status === "unavailable" ? 'style="cursor: not-allowed;"' : ""}>
+                        <div style="font-size: 1.2rem; font-weight: 700;">${time}</div>
+                        <div style="font-size: 0.8rem; opacity: 0.8; margin-top: 0.3rem;">${statusText}</div>
+                    </div>
+                `;
+          })
+          .join("");
+      }
+
+      function selectTime(time) {
+        const slots = document.querySelectorAll(".time-slot");
+        slots.forEach((s) => s.classList.remove("selected"));
+        event.target.closest(".time-slot").classList.add("selected");
+        selectedTime = time;
+        updateSelectedPath();
+      }
+
+      function updateSelectedPath() {
+        const display = document.getElementById("selectedPathDisplay");
+        const pathText = document.getElementById("selectedPath");
+
+        if (selectedInstitution || selectedService || selectedTime) {
+          const inst = institutions.find((i) => i.id === selectedInstitution);
+          const svc = services.find((s) => s.id === selectedService);
+
+          let path = "";
+          if (inst) path += `${inst.name}`;
+          if (svc) path += ` → ${svc.name}`;
+          if (selectedTime) path += ` → ${selectedTime}`;
+
+          pathText.textContent = path;
+          display.style.display = "block";
+        } else {
+          display.style.display = "none";
+        }
+      }
+
+      function createCitizenTicket() {
+        if (!selectedInstitution || !selectedService || !selectedTime) {
+          alert("Complétez tous les étapes");
+          return;
+        }
+
+        const svc = services.find((s) => s.id === selectedService);
+        const inst = institutions.find((i) => i.id === selectedInstitution);
+
+        const newTicket = {
+          id: allTickets.length + 1,
+          ticketNumber: String(allTickets.length + 1).padStart(5, "0"),
+          service: svc.name,
+          institution: svc.institution,
+          institutionName: inst.name,
+          date: new Date().toISOString().split("T")[0],
+          scheduledTime: selectedTime,
+          status: "waiting",
+          position:
+            allTickets.filter(
+              (t) =>
+                t.service === svc.name &&
+                t.date === new Date().toISOString().split("T")[0],
+            ).length + 1,
+          tolerance: 15,
+        };
+
+        allTickets.unshift(newTicket);
+        showAlert("🎉 Ticket créé avec succès!", "success");
+
+        // Reset
+        selectedInstitution = null;
+        selectedService = null;
+        selectedTime = null;
+        renderCitizen();
+        showPage("citizenCreatePage");
+      }
+
+      function updateCitizenDisplay() {
+        const today = new Date().toISOString().split("T")[0];
+        const active = allTickets.find(
+          (t) => t.date === today && t.status !== "missed",
+        );
+
+        if (active) {
+          const isLate = checkIfLate(active);
+          const tolerance = active.tolerance || 15;
+          document.getElementById("citizenTicketDisplay").innerHTML = `
+                    ${isLate ? '<div class="alert alert-danger">⏰ Votre créneau est passé!</div>' : ""}
+                    <div class="ticket">
+                        <div class="ticket-header">
+                            <div class="ticket-number-label">📋 Votre Ticket</div>
+                            <div class="ticket-status-badge">${active.status === "waiting" ? "⏳ En Attente" : active.status === "beingtreated" ? "🔄 En Cours" : "✅ Traité"}</div>
+                        </div>
+                        <div class="ticket-number">${active.ticketNumber}</div>
+                        <div class="ticket-info">
+                            <div class="ticket-info-item">
+                                <div class="ticket-info-label">🏥 Institution</div>
+                                <div class="ticket-info-value" style="font-size: 1.1rem;">${active.institutionName}</div>
+                            </div>
+                            <div class="ticket-info-item">
+                                <div class="ticket-info-label">🔧 Service</div>
+                                <div class="ticket-info-value">${active.service}</div>
+                            </div>
+                            <div class="ticket-info-item">
+                                <div class="ticket-info-label">⏰ Heure Prévue</div>
+                                <div class="ticket-info-value">${active.scheduledTime}</div>
+                            </div>
+                            <div class="ticket-info-item">
+                                <div class="ticket-info-label">👥 Position</div>
+                                <div class="ticket-info-value">#${active.position}</div>
+                            </div>
+                        </div>
+                        <div class="ticket-tolerance">
+                            <div class="ticket-tolerance-label">⏳ Temps de Tolérance</div>
+                            <div class="ticket-tolerance-value">+${tolerance} minutes après votre créneau</div>
+                        </div>
+                    </div>
+                    ${isLate ? `<button class="btn-action btn-warning" onclick="rescheduleTicket(${active.id})">📅 Reprendre demain</button>` : ""}
+                `;
+        } else {
+          document.getElementById("citizenTicketDisplay").innerHTML =
+            '<div class="alert alert-info">Aucun ticket actif</div>';
+        }
+
+        const history = allTickets.filter(
+          (t) => t.date !== today && t.status === "treated",
+        );
+        document.getElementById("citizenHistoryDisplay").innerHTML =
+          history.length > 0
+            ? `
+                <div class="table-responsive">
+                    <table>
+                        <tr>
+                            <th>Numéro</th>
+                            <th>Service</th>
+                            <th>Date</th>
+                            <th>Statut</th>
+                        </tr>
+                        ${history
+                          .slice(0, 10)
+                          .map(
+                            (t) => `
+                            <tr>
+                                <td><strong>${t.ticketNumber}</strong></td>
+                                <td>${t.service}</td>
+                                <td>${t.date}</td>
+                                <td><span class="badge badge-success">Traité</span></td>
+                            </tr>
+                        `,
+                          )
+                          .join("")}
+                    </table>
+                </div>
+            `
+            : '<div class="alert alert-info">Aucun historique</div>';
+      }
+
+      function checkIfLate(ticket) {
+        const now = new Date();
+        const [h, m] = ticket.scheduledTime.split(":");
+        const scheduled = new Date(now);
+        scheduled.setHours(parseInt(h), parseInt(m), 0);
+        return now > new Date(scheduled.getTime() + 15 * 60 * 1000);
+      }
+
+      function rescheduleTicket(id) {
+        const old = allTickets.find((t) => t.id === id);
+        if (!old) return;
+
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        const newTicket = { ...old };
+        newTicket.id = allTickets.length + 1;
+        newTicket.date = tomorrow.toISOString().split("T")[0];
+        newTicket.status = "waiting";
+
+        allTickets.unshift(newTicket);
+        showAlert("Ticket replanifié pour demain", "success");
+        updateCitizenDisplay();
+      }
+
+      // OPERATOR INTERFACE
+      function renderOperator() {
+        const instName = institutions.find(
+          (i) => i.id === currentUser.institution,
+        ).name;
+
+        addSidebarItem("Prochain Patient", "👤", "operatorMainPage");
+        addSidebarItem("Patients Attendus", "📋", "operatorListPage");
+
+        const content = document.getElementById("contentArea");
+        content.innerHTML = "";
+
+        const mainPage = document.createElement("div");
+        mainPage.id = "operatorMainPage";
+        mainPage.className = "page active";
+        mainPage.innerHTML = `
+                <div class="alert alert-info">Vous travaillez <strong>${instName}</strong></div>
+                <div class="card">
+                    <div class="card-title">👤 Prochain Patient</div>
+                    <div id="operatorNextPatient"></div>
+                </div>
+                <div class="grid-2">
+                    <div class="stat-card">
+                        <div class="stat-label">Patients en Attente</div>
+                        <div class="stat-value" id="operatorWaitingCount">0</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #32b8c6 0%, #1f8b96 100%);">
+                        <div class="stat-label">Traités Aujourd'hui</div>
+                        <div class="stat-value" id="operatorTreatedCount">0</div>
+                    </div>
+                </div>
+            `;
+
+        const listPage = document.createElement("div");
+        listPage.id = "operatorListPage";
+        listPage.className = "page";
+        listPage.innerHTML = `
+                <div class="alert alert-info">Tickets de <strong>${instName}</strong></div>
+                <div class="card">
+                    <div class="card-title">📋 Tickets d'Aujourd'hui</div>
+                    <div id="operatorTicketsList"></div>
+                </div>
+            `;
+
+        content.appendChild(mainPage);
+        content.appendChild(listPage);
+
+        updateOperatorDisplay();
+      }
+
+      function updateOperatorDisplay() {
+        const today = new Date().toISOString().split("T")[0];
+        const todayTickets = allTickets.filter(
+          (t) => t.date === today && t.institution === currentUser.institution,
+        );
+        const waiting = todayTickets.filter((t) => t.status === "waiting");
+        const treated = todayTickets.filter(
+          (t) => t.status === "treated",
+        ).length;
+
+        document.getElementById("operatorWaitingCount").textContent =
+          waiting.length;
+        document.getElementById("operatorTreatedCount").textContent = treated;
+
+        const next = waiting[0];
+        if (next) {
+          document.getElementById("operatorNextPatient").innerHTML = `
+                    <div class="ticket">
+                        <div style="font-size: 0.9rem;">À appeler</div>
+                        <div class="ticket-number">${next.ticketNumber}</div>
+                        <div style="margin-top: 1.5rem;">${next.service} - ${next.scheduledTime}</div>
+                        <div class="btn-group" style="margin-top: 1.5rem;">
+                            <button class="btn-action btn-success" onclick="operatorMarkArrived(${next.id})">Arrivé</button>
+                            <button class="btn-action btn-danger" onclick="operatorMarkLate(${next.id})">Retard</button>
+                        </div>
+                    </div>
+                `;
+        } else {
+          document.getElementById("operatorNextPatient").innerHTML =
+            '<div class="alert alert-info">Aucun patient en attente</div>';
+        }
+
+        document.getElementById("operatorTicketsList").innerHTML = `
+                <div class="table-responsive">
+                    <table>
+                        <tr>
+                            <th>Numéro</th>
+                            <th>Service</th>
+                            <th>Heure</th>
+                            <th>Statut</th>
+                            <th>Action</th>
+                        </tr>
+                        ${todayTickets
+                          .map(
+                            (t) => `
+                            <tr>
+                                <td><strong>${t.ticketNumber}</strong></td>
+                                <td>${t.service}</td>
+                                <td>${t.scheduledTime}</td>
+                                <td><span class="badge ${t.status === "waiting" ? "badge-info" : t.status === "treated" ? "badge-success" : "badge-warning"}">${t.status}</span></td>
+                                <td>
+                                    ${t.status === "waiting" ? `<button class="btn-action btn-secondary btn-sm" onclick="operatorMarkArrived(${t.id})">Arrivé</button>` : ""}
+                                    ${t.status === "beingtreated" ? `<button class="btn-action btn-secondary btn-sm" onclick="operatorMarkTreated(${t.id})">Fini</button>` : ""}
+                                </td>
+                            </tr>
+                        `,
+                          )
+                          .join("")}
+                    </table>
+                </div>
+            `;
+      }
+
+      function operatorMarkArrived(id) {
+        const ticket = allTickets.find((t) => t.id === id);
+        if (ticket) {
+          ticket.status = "beingtreated";
+          updateOperatorDisplay();
+          showAlert("Patient enregistré", "success");
+        }
+      }
+
+      function operatorMarkLate(id) {
+        const ticket = allTickets.find((t) => t.id === id);
+        if (ticket) {
+          ticket.status = "missed";
+          updateOperatorDisplay();
+          showAlert("Ticket invalide - Retard", "warning");
+        }
+      }
+
+      function operatorMarkTreated(id) {
+        const ticket = allTickets.find((t) => t.id === id);
+        if (ticket) {
+          ticket.status = "treated";
+          updateOperatorDisplay();
+          showAlert("Patient soigné", "success");
+        }
+      }
+
+      // ADMIN INTERFACE
+      function renderAdmin() {
+        addSidebarItem("Tableau de Bord", "📊", "adminDashPage");
+        addSidebarItem("Opérateurs", "👥", "adminOperatorsPage");
+        addSidebarItem("Tickets", "📋", "adminTicketsPage");
+
+        const content = document.getElementById("contentArea");
+        content.innerHTML = "";
+
+        // Dashboard
+        const dashPage = document.createElement("div");
+        dashPage.id = "adminDashPage";
+        dashPage.className = "page active";
+        dashPage.innerHTML = `
+                <div class="card">
+                    <div class="card-title">📊 Vue Globale</div>
+                    <div class="grid-2">
+                        <div class="stat-card">
+                            <div class="stat-label">Total Tickets Aujourd'hui</div>
+                            <div class="stat-value" id="adminTotalTickets">0</div>
+                        </div>
+                        <div class="stat-card" style="background: linear-gradient(135deg, #32b8c6 0%, #1f8b96 100%);">
+                            <div class="stat-label">Traités</div>
+                            <div class="stat-value" id="adminTreatedTickets">0</div>
+                        </div>
+                        <div class="stat-card" style="background: linear-gradient(135deg, #ff5459 0%, #c73a41 100%);">
+                            <div class="stat-label">Manqués</div>
+                            <div class="stat-value" id="adminMissedTickets">0</div>
+                        </div>
+                        <div class="stat-card" style="background: linear-gradient(135deg, #ff8500 0%, #cc6b00 100%);">
+                            <div class="stat-label">En Attente</div>
+                            <div class="stat-value" id="adminWaitingTickets">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">📈 Taux Rendez-vous Manqués</div>
+                    <div class="progress">
+                        <div class="progress-bar" id="adminMissedRate" style="width: 0%;"></div>
+                    </div>
+                    <div style="text-align: center; font-weight: 600;" id="adminMissedRateText">0%</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">🏥 Charge par Institution</div>
+                    <div id="adminInstitutionLoad"></div>
+                </div>
+            `;
+
+        // Operators
+        const operatorsPage = document.createElement("div");
+        operatorsPage.id = "adminOperatorsPage";
+        operatorsPage.className = "page";
+        operatorsPage.innerHTML = `
+                <div class="card">
+                    <div class="card-title">👥 Gérer les Opérateurs</div>
+                    <h3 style="margin-bottom: 1rem;">Opérateurs Existants</h3>
+                    <div id="adminOperatorsList"></div>
+
+                    <h3 style="margin-top: 2rem;">Ajouter un Nouvel Opérateur</h3>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" id="newOpEmail" class="form-control" placeholder="operator@email.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Nom</label>
+                        <input type="text" id="newOpName" class="form-control" placeholder="Nom complet">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Mot de passe</label>
+                        <input type="password" id="newOpPassword" class="form-control" placeholder="••••••">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Institution</label>
+                        <select id="newOpInstitution" class="form-control">
+                            <option value="">-- Sélectionnez --</option>
+                            ${institutions.map((i) => `<option value="${i.id}">${i.name}</option>`).join("")}
+                        </select>
+                    </div>
+
+                    <button class="btn-action btn-primary" onclick="addOperator()">Créer Opérateur</button>
+                </div>
+            `;
+
+        // Tickets
+        const ticketsPage = document.createElement("div");
+        ticketsPage.id = "adminTicketsPage";
+        ticketsPage.className = "page";
+        ticketsPage.innerHTML = `
+                <div class="card">
+                    <div class="card-title">📋 Historique Complet</div>
+                    <div class="form-group">
+                        <input type="text" id="adminSearch" class="form-control" placeholder="Rechercher..." onkeyup="updateAdminTickets()">
+                    </div>
+                    <div id="adminTicketsList"></div>
+                </div>
+            `;
+
+        content.appendChild(dashPage);
+        content.appendChild(operatorsPage);
+        content.appendChild(ticketsPage);
+
+        updateAdminDisplay();
+      }
+
+      function updateAdminDisplay() {
+        const today = new Date().toISOString().split("T")[0];
+        const todayTickets = allTickets.filter((t) => t.date === today);
+        const treated = todayTickets.filter(
+          (t) => t.status === "treated",
+        ).length;
+        const missed = todayTickets.filter((t) => t.status === "missed").length;
+        const waiting = todayTickets.filter(
+          (t) => t.status === "waiting",
+        ).length;
+
+        document.getElementById("adminTotalTickets").textContent =
+          todayTickets.length;
+        document.getElementById("adminTreatedTickets").textContent = treated;
+        document.getElementById("adminMissedTickets").textContent = missed;
+        document.getElementById("adminWaitingTickets").textContent = waiting;
+
+        const missedRate =
+          todayTickets.length > 0
+            ? Math.round((missed / todayTickets.length) * 100)
+            : 0;
+        document.getElementById("adminMissedRate").style.width =
+          missedRate + "%";
+        document.getElementById("adminMissedRateText").textContent =
+          missedRate + "%";
+
+        // Institution load
+        const instLoad = {};
+        todayTickets.forEach((t) => {
+          instLoad[t.institutionName] = (instLoad[t.institutionName] || 0) + 1;
+        });
+
+        let html =
+          '<div class="table-responsive"><table><tr><th>Institution</th><th>Tickets</th><th>Charge</th></tr>';
+        Object.entries(instLoad).forEach(([inst, count]) => {
+          const pct = Math.round((count / todayTickets.length) * 100);
+          html += `<tr><td>${inst}</td><td>${count}</td><td><div class="progress"><div class="progress-bar" style="width: ${pct}%"></div></div></td></tr>`;
+        });
+        html += "</table></div>";
+
+        document.getElementById("adminInstitutionLoad").innerHTML = html;
+
+        updateAdminOperators();
+        updateAdminTickets();
+      }
+
+      function updateAdminOperators() {
+        const operators = Object.entries(users).filter(
+          ([k, v]) => v.role === "operator",
+        );
+
+        let html =
+          '<div class="table-responsive"><table><tr><th>Email</th><th>Nom</th><th>Institution</th><th>Action</th></tr>';
+        operators.forEach(([email, user]) => {
+          const inst = institutions.find((i) => i.id === user.institution);
+          html += `<tr><td>${email}</td><td>${user.name}</td><td>${inst ? inst.name : "-"}</td><td><button class="btn-action btn-danger btn-sm" onclick="deleteOperator('${email}')">Supprimer</button></td></tr>`;
+        });
+        html += "</table></div>";
+
+        document.getElementById("adminOperatorsList").innerHTML = html;
+      }
+
+      function addOperator() {
+        const email = document.getElementById("newOpEmail").value;
+        const name = document.getElementById("newOpName").value;
+        const password = document.getElementById("newOpPassword").value;
+        const institution = document.getElementById("newOpInstitution").value;
+
+        if (!email || !name || !password || !institution) {
+          alert("Remplissez tous les champs");
+          return;
+        }
+
+        if (users[email]) {
+          alert("Cet email existe déjà");
+          return;
+        }
+
+        users[email] = {
+          password,
+          role: "operator",
+          name,
+          institution: parseInt(institution),
+        };
+
+        document.getElementById("newOpEmail").value = "";
+        document.getElementById("newOpName").value = "";
+        document.getElementById("newOpPassword").value = "";
+        document.getElementById("newOpInstitution").value = "";
+
+        showAlert("Opérateur créé!", "success");
+        updateAdminOperators();
+      }
+
+      function deleteOperator(email) {
+        if (confirm("Etes-vous sûr?")) {
+          delete users[email];
+          showAlert("Opérateur supprimé", "success");
+          updateAdminOperators();
+        }
+      }
+
+      function updateAdminTickets() {
+        const search =
+          document.getElementById("adminSearch")?.value.toLowerCase() || "";
+        const filtered = allTickets
+          .filter(
+            (t) =>
+              t.ticketNumber.toLowerCase().includes(search) ||
+              t.service.toLowerCase().includes(search) ||
+              t.institutionName.toLowerCase().includes(search),
+          )
+          .slice(0, 50);
+
+        let html =
+          '<div class="table-responsive"><table><tr><th>Numéro</th><th>Service</th><th>Institution</th><th>Date</th><th>Heure</th><th>Statut</th></tr>';
+        filtered.forEach((t) => {
+          const badge =
+            t.status === "waiting"
+              ? "badge-info"
+              : t.status === "treated"
+                ? "badge-success"
+                : t.status === "missed"
+                  ? "badge-danger"
+                  : "badge-warning";
+          html += `<tr><td><strong>${t.ticketNumber}</strong></td><td>${t.service}</td><td>${t.institutionName}</td><td>${t.date}</td><td>${t.scheduledTime}</td><td><span class="badge ${badge}">${t.status}</span></td></tr>`;
+        });
+        html += "</table></div>";
+
+        if (document.getElementById("adminTicketsList")) {
+          document.getElementById("adminTicketsList").innerHTML = html;
+        }
+      }
+
+      // UTILITIES
+      function showAlert(message, type) {
+        const alert = document.createElement("div");
+        alert.className = `alert alert-${type}`;
+        alert.style.position = "fixed";
+        alert.style.top = "80px";
+        alert.style.right = "20px";
+        alert.style.zIndex = "1000";
+        alert.style.minWidth = "300px";
+        alert.innerHTML = `<span>${message}</span><div>${message}</div>`;
+        document.body.appendChild(alert);
+
+        setTimeout(() => alert.remove(), 3000);
+      }
+
+      // INIT
+      initializeUsers();
+      generateMockTickets();
+    </script>
+  </body>
+</html>
