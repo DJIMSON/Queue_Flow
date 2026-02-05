@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inscription - QueueFlow</title>
+    <title>Inscription Citoyen - QueueFlow</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
@@ -11,10 +11,12 @@
         .logo { text-align: center; margin-bottom: 30px; }
         .logo h1 { font-size: 2.5rem; color: #667eea; margin-bottom: 10px; }
         .logo p { color: #666; font-size: 0.95rem; }
+        .info-box { background: #e3f2fd; border-left: 4px solid #2196f3; padding: 15px; border-radius: 8px; margin-bottom: 25px; }
+        .info-box p { color: #0d47a1; font-size: 0.9rem; line-height: 1.5; }
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; margin-bottom: 8px; color: #333; font-weight: 600; }
-        .form-group input, .form-group select { width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1rem; transition: all 0.3s ease; }
-        .form-group input:focus, .form-group select:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
+        .form-group input { width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1rem; transition: all 0.3s ease; }
+        .form-group input:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
         .btn-signup { width: 100%; padding: 15px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border: none; border-radius: 10px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: transform 0.3s ease; margin-top: 10px; }
         .btn-signup:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(245, 87, 108, 0.4); }
         .divider { text-align: center; margin: 25px 0; position: relative; }
@@ -33,18 +35,12 @@
     <div class="signup-container">
         <div class="logo">
             <h1>🎯 QueueFlow</h1>
-            <p>Créez votre compte</p>
+            <p>Créez votre compte citoyen</p>
+        </div>
+        <div class="info-box">
+            <p><strong>ℹ️ Information:</strong> Cette inscription est réservée aux citoyens. Les comptes opérateurs et administrateurs sont créés par l'administration.</p>
         </div>
         <form id="signupForm">
-            <div class="form-group">
-                <label for="role">👤 Type de compte</label>
-                <select id="role" name="role" required>
-                    <option value="">Sélectionnez votre rôle</option>
-                    <option value="citizen">Citoyen</option>
-                    <option value="operator">Opérateur</option>
-                    <option value="admin">Administrateur</option>
-                </select>
-            </div>
             <div class="form-group">
                 <label for="name">📝 Nom complet</label>
                 <input type="text" id="name" name="name" placeholder="Votre nom complet" required>
@@ -65,7 +61,7 @@
                 <label for="confirmPassword">✅ Confirmer le mot de passe</label>
                 <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirmez votre mot de passe" required>
             </div>
-            <button type="submit" class="btn-signup">S'Inscrire</button>
+            <button type="submit" class="btn-signup">S'Inscrire en tant que Citoyen</button>
         </form>
         <div class="divider"><span>OU</span></div>
         <div class="login-link">Déjà un compte ? <a href="login.html">Se connecter</a></div>
@@ -81,13 +77,13 @@
                 return;
             }
             const formData = {
-                role: document.getElementById('role').value,
+                role: 'citizen',
                 name: document.getElementById('name').value,
                 email: document.getElementById('email').value,
                 phone: document.getElementById('phone').value,
                 password: password
             };
-            console.log('Inscription:', formData);
+            console.log('Inscription citoyen:', formData);
             alert('Inscription réussie ! Redirection vers la connexion...');
             window.location.href = 'login.html';
         });
