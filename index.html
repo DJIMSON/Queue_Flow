@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QueueFlow - Gestion Intelligente des Files d'Attente</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: center;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+        }
+
+        .card-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+
+        .card p {
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .features {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-top: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .features h3 {
+            color: #667eea;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .feature-item:hover {
+            background: #e9ecef;
+        }
+
+        .feature-item span {
+            font-size: 1.5rem;
+            margin-right: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 QueueFlow</h1>
+            <p>Système moderne de gestion de files d'attente pour institutions sénégalaises</p>
+        </div>
+
+        <div class="cards">
+            <div class="card">
+                <div class="card-icon">👤</div>
+                <h2>Connexion</h2>
+                <p>Accédez à votre compte pour gérer vos files d'attente et suivre vos rendez-vous.</p>
+                <a href="login.html" class="btn">Se Connecter</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">✨</div>
+                <h2>Inscription</h2>
+                <p>Créez un nouveau compte pour commencer à utiliser QueueFlow dès maintenant.</p>
+                <a href="signup.html" class="btn btn-secondary">S'Inscrire</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">📊</div>
+                <h2>Application</h2>
+                <p>Accédez directement à l'interface de gestion complète de QueueFlow.</p>
+                <a href="app.html" class="btn">Accéder à l'App</a>
+            </div>
+        </div>
+
+        <div class="features">
+            <h3>✅ Fonctionnalités</h3>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <span>🎯</span>
+                    <div>Gestion intelligente des files d'attente</div>
+                </div>
+                <div class="feature-item">
+                    <span>👥</span>
+                    <div>Interface pour Citoyens, Opérateurs et Administrateurs</div>
+                </div>
+                <div class="feature-item">
+                    <span>⏱️</span>
+                    <div>Connexion API temps réel avec Railway</div>
+                </div>
+                <div class="feature-item">
+                    <span>📱</span>
+                    <div>Design responsive et professionnel</div>
+                </div>
+                <div class="feature-item">
+                    <span>🔒</span>
+                    <div>Sécurité et authentification</div>
+                </div>
+                <div class="feature-item">
+                    <span>📈</span>
+                    <div>Statistiques et rapports détaillés</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
