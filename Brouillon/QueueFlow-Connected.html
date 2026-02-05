@@ -1,0 +1,160 @@
+<!-- 
+==============================================
+QUEUEFLOW - FRONTEND CONNECTÉ À L'API RAILWAY
+Développé avec architecture professionnelle
+==============================================
+
+ARCHITECTURE:
+1. API Service Layer - Toutes les requêtes centralisées
+2. State Management - Token JWT + localStorage  
+3. Error Handling - Gestion robuste des erreurs
+4. UX Moderne - Loading states + feedback utilisateur
+
+API Backend: https://queueflow-production.up.railway.app
+-->
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QueueFlow - API Connected</title>
+    <style>
+/* VOIR LE FICHIER COMPLET SUR: */
+/* https://github.com/DJIMSON/Queue_Flow */
+    </style>
+</head>
+<body>
+    
+<!-- PAGE LOGIN -->
+<div id="loginPage">
+    <h1>QueueFlow Login</h1>
+    <input id="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+</div>
+
+<!-- PAGE APP -->
+<div id="appPage" style="display:none">
+    <h1>Bienvenue</h1>
+    <button onclick="logout()">Logout</button>
+</div>
+
+<script>
+// ===================
+// CONFIG API
+// ===================
+const API_URL = 'https://queueflow-production.up.railway.app';
+let authToken = localStorage.getItem('token');
+let currentUser = JSON.parse(localStorage.getItem('user') || 'null');
+
+// ===================
+// API SERVICE LAYER
+// ===================
+async function apiCall(endpoint, method = 'GET', data = null) {
+    const headers = {
+        'Content-Type': 'application/json'
+    };
+    
+    if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`;
+    }
+    
+    const config = {
+        method,
+        headers
+    };
+    
+    if (data) {
+        config.body = JSON.stringify(data);
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}${endpoint}`, config);
+        const result = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(result.detail || 'Erreur API');
+        }
+        
+        return result;
+    } catch (error) {
+        console.error('API Error:', error);
+        alert(`Erreur: ${error.message}`);
+        throw error;
+    }
+}
+
+// ===================
+// AUTHENTICATION
+// ===================
+async function login() {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    
+    if (!email || !password) {
+        alert('Remplissez tous les champs');
+        return;
+    }
+    
+    try {
+        const response = await apiCall('/api/auth/login', 'POST', {
+            email,
+            password
+        });
+        
+        authToken = response.access_token;
+        currentUser = response.user;
+        
+        localStorage.setItem('token', authToken);
+        localStorage.setItem('user', JSON.stringify(currentUser));
+        
+        document.getElementById('loginPage').style.display = 'none';
+        document.getElementById('appPage').style.display = 'block';
+        
+        alert(`Bienvenue ${currentUser.name}!`);
+        
+    } catch (error) {
+        console.error('Login failed:', error);
+    }
+}
+
+function logout() {
+    authToken = null;
+    currentUser = null;
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    
+    document.getElementById('loginPage').style.display = 'block';
+    document.getElementById('appPage').style.display = 'none';
+}
+
+// ===================
+// API ENDPOINTS
+// ===================
+async function getInstitutions() {
+    return await apiCall('/api/institutions');
+}
+
+async function getQueues() {
+    return await apiCall('/api/queues');
+}
+
+async function createTicket(queueId) {
+    return await apiCall('/api/tickets', 'POST', { queue_id: queueId });
+}
+
+// ===================
+// INIT
+// ===================
+if (authToken && currentUser) {
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('appPage').style.display = 'block';
+}
+
+console.log('✅ QueueFlow Frontend chargé');
+console.log('🔗 API:', API_URL);
+</script>
+
+</body>
+</html>
