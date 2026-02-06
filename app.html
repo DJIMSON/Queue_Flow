@@ -3,146 +3,394 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QueueFlow - Application</title>
+    <title>QueueFlow - Tableau de Bord Pro</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; }
-        .navbar { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .navbar h1 { font-size: 1.8rem; }
-        .navbar .user-info { display: flex; gap: 20px; align-items: center; }
-        .navbar button { background: rgba(255,255,255,0.2); border: none; padding: 10px 20px; border-radius: 8px; color: white; cursor: pointer; transition: all 0.3s; }
-        .navbar button:hover { background: rgba(255,255,255,0.3); }
-        .container { max-width: 1400px; margin: 40px auto; padding: 0 20px; }
-        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-bottom: 40px; }
-        .stat-card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: transform 0.3s; }
-        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
-        .stat-card h3 { color: #667eea; font-size: 2.5rem; margin-bottom: 10px; }
-        .stat-card p { color: #666; font-size: 1rem; }
-        .section { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 30px; }
-        .section h2 { color: #333; margin-bottom: 25px; font-size: 1.5rem; }
-        .btn { padding: 12px 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: all 0.3s; }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3); }
-        .queue-list { display: grid; gap: 15px; }
-        .queue-item { padding: 20px; background: #f8f9fa; border-radius: 10px; border-left: 4px solid #667eea; display: flex; justify-content: space-between; align-items: center; }
-        .queue-item strong { color: #333; font-size: 1.1rem; }
-        .queue-item span { color: #666; }
-        .status { padding: 5px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
-        .status.active { background: #d1fae5; color: #065f46; }
-        .status.waiting { background: #fef3c7; color: #92400e; }
-        .status.completed { background: #dbeafe; color: #1e40af; }
-        .api-status { display: flex; align-items: center; gap: 10px; padding: 15px; background: #f0fdf4; border-radius: 10px; margin-bottom: 20px; }
-        .api-status.error { background: #fef2f2; }
-        .api-dot { width: 12px; height: 12px; border-radius: 50%; background: #10b981; animation: pulse 2s infinite; }
-        .api-status.error .api-dot { background: #ef4444; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        @media (max-width: 768px) { .navbar { flex-direction: column; gap: 15px; } .dashboard { grid-template-columns: 1fr; } }
+        :root {
+            --primary: #5b7dff;
+            --primary-dark: #4a66d4;
+            --secondary: #2d3748;
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #10b981;
+            --danger: #ef4444;
+            --sidebar-width: 260px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-main); overflow-x: hidden; }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--card-bg);
+            position: fixed;
+            left: 0;
+            top: 0;
+            border-right: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+        }
+
+        .logo-container {
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-img { width: 45px; height: 45px; object-fit: contain; }
+        .logo-text { font-size: 1.5rem; font-weight: 800; background: linear-gradient(to right, #5b7dff, #a5b4fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .nav-links { list-style: none; padding: 1rem; flex-grow: 1; }
+        .nav-item {
+            padding: 0.8rem 1.2rem;
+            margin-bottom: 0.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-muted);
+            transition: 0.3s;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(91, 125, 255, 0.1);
+            color: var(--primary);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: var(--card-bg);
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .role-badge {
+            background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            padding: 1.8rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: transform 0.3s ease;
+        }
+        .stat-card:hover { transform: translateY(-5px); }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .stat-label { color: var(--text-muted); font-size: 0.9rem; }
+        .stat-value { font-size: 1.8rem; font-weight: 700; margin-top: 5px; }
+
+        /* Tables & Lists */
+        .data-section {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .queue-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .queue-table th {
+            text-align: left;
+            padding: 1rem;
+            color: var(--text-muted);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .queue-table td {
+            padding: 1.2rem 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .status-pill {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        .status-active { background: rgba(16, 185, 129, 0.1); color: var(--accent); }
+        .status-waiting { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+
+        /* Role Sections */
+        .role-view { display: none; }
+        .role-view.active { display: block; }
+
+        #ticketModal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .ticket-box {
+            background: white;
+            color: #1a202c;
+            padding: 2.5rem;
+            border-radius: 15px;
+            width: 320px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+        }
+
+        .ticket-number { font-size: 4rem; font-weight: 900; color: var(--primary); margin: 1rem 0; }
     </style>
 </head>
 <body>
-    <div class="navbar">
-        <h1>🎯 QueueFlow</h1>
-        <div class="user-info">
-            <span id="userRole"></span>
-            <button onclick="window.location.href='index.html'">Déconnexion</button>
-        </div>
-    </div>
 
-    <div class="container">
-        <div class="api-status" id="apiStatus">
-            <div class="api-dot"></div>
-            <span>Connecté à l'API QueueFlow</span>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo-container">
+            <img src="https://i.imgur.com/vHqY7bK.png" alt="QueueFlow Logo" class="logo-img">
+            <span class="logo-text">QueueFlow</span>
+        </div>
+        <ul class="nav-links">
+            <li class="nav-item active"><i class="fas fa-chart-line"></i> Dashboard</li>
+            <li class="nav-item"><i class="fas fa-ticket-alt"></i> Mes Tickets</li>
+            <li class="nav-item"><i class="fas fa-building"></i> Institutions</li>
+            <li class="nav-item"><i class="fas fa-history"></i> Historique</li>
+            <li class="nav-item" style="margin-top: auto;" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Déconnexion</li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="header">
+            <div>
+                <h1 id="welcomeTitle">Bienvenue sur QueueFlow</h1>
+                <p style="color: var(--text-muted)">Gérez vos files d'attente intelligemment.</p>
+            </div>
+            <div class="user-profile">
+                <span id="roleBadge" class="role-badge">Citoyen</span>
+                <span id="userName">Utilisateur</span>
+                <img src="https://ui-avatars.com/api/?name=User&background=5b7dff&color=fff" style="width: 35px; border-radius: 50%;">
+            </div>
+        </header>
+
+        <!-- Citizen View -->
+        <div id="citizenView" class="role-view">
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(91, 125, 255, 0.1); color: var(--primary);">
+                        <i class="fas fa-hospital"></i>
+                    </div>
+                    <div class="stat-label">Hôpital Principal</div>
+                    <div class="stat-value">12 Pers.</div>
+                    <div style="font-size: 0.8rem; color: #f59e0b; margin-top: 10px;">Attente estimée: 25 min</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--accent);">
+                        <i class="fas fa-university"></i>
+                    </div>
+                    <div class="stat-label">Mairie de Dakar</div>
+                    <div class="stat-value">5 Pers.</div>
+                    <div style="font-size: 0.8rem; color: var(--accent); margin-top: 10px;">Attente estimée: 8 min</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);">
+                        <i class="fas fa-landmark"></i>
+                    </div>
+                    <div class="stat-label">Police des Étrangers</div>
+                    <div class="stat-value">45 Pers.</div>
+                    <div style="font-size: 0.8rem; color: var(--danger); margin-top: 10px;">Surcharge détectée</div>
+                </div>
+            </div>
+
+            <div class="data-section">
+                <div class="section-header">
+                    <h2>Prendre un Ticket</h2>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <select id="instSelect" style="padding: 12px; border-radius: 8px; background: #2d3748; color: white; border: none;">
+                        <option value="">Choisir une institution...</option>
+                        <option value="Hôpital Principal">Hôpital Principal</option>
+                        <option value="Mairie de Dakar">Mairie de Dakar</option>
+                        <option value="Senelec">Senelec</option>
+                        <option value="Police Centre">Police Centre</option>
+                    </select>
+                    <button class="btn-primary" onclick="generateTicket()">
+                        <i class="fas fa-plus"></i> Générer mon Ticket
+                    </button>
+                </div>
+            </div>
         </div>
 
-        <div class="dashboard">
-            <div class="stat-card">
-                <h3 id="totalQueues">0</h3>
-                <p>📊 Files d'attente actives</p>
+        <!-- Operator View -->
+        <div id="operatorView" class="role-view">
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Tickets en attente</div>
+                    <div class="stat-value">28</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Servis aujourd'hui</div>
+                    <div class="stat-value">142</div>
+                </div>
             </div>
-            <div class="stat-card">
-                <h3 id="totalCitizens">0</h3>
-                <p>👥 Citoyens en attente</p>
-            </div>
-            <div class="stat-card">
-                <h3 id="avgWaitTime">0 min</h3>
-                <p>⏱️ Temps d'attente moyen</p>
+            <div class="data-section">
+                <div class="section-header">
+                    <h2>Gestion de la File d'Attente</h2>
+                    <button class="btn-primary" onclick="callNext()">Appeler Suivant <i class="fas fa-arrow-right"></i></button>
+                </div>
+                <table class="queue-table">
+                    <thead>
+                        <tr><th>Numéro</th><th>Nom</th><th>Service</th><th>Attente</th><th>Statut</th></tr>
+                    </thead>
+                    <tbody id="operatorQueueBody">
+                        <tr><td>#A-102</td><td>Modou Fall</td><td>Légalisation</td><td>15 min</td><td><span class="status-pill status-waiting">En attente</span></td></tr>
+                        <tr><td>#A-101</td><td>Aminata Sow</td><td>Légalisation</td><td>En cours</td><td><span class="status-pill status-active">Au guichet</span></td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
-        <div class="section">
-            <h2>Files d'attente</h2>
-            <div id="queueList" class="queue-list">
-                <p style="color: #999; text-align: center; padding: 40px;">Chargement des données...</p>
+        <!-- Admin View -->
+        <div id="adminView" class="role-view">
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Utilisateurs</div>
+                    <div class="stat-value">1,204</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Institutions Actives</div>
+                    <div class="stat-value">15</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Alertes Système</div>
+                    <div class="stat-value" style="color: var(--danger)">0</div>
+                </div>
+            </div>
+            <div class="data-section">
+                <h2>Rapports de Performance</h2>
+                <div style="height: 200px; display: flex; align-items: flex-end; gap: 20px; padding: 20px;">
+                    <div style="flex:1; background: var(--primary); height: 60%; border-radius: 5px;"></div>
+                    <div style="flex:1; background: var(--primary); height: 85%; border-radius: 5px;"></div>
+                    <div style="flex:1; background: var(--primary); height: 45%; border-radius: 5px;"></div>
+                    <div style="flex:1; background: var(--primary); height: 95%; border-radius: 5px;"></div>
+                </div>
             </div>
         </div>
 
-        <div class="section">
-            <h2>Actions rapides</h2>
-            <button class="btn" onclick="refreshData()">Actualiser les données</button>
+    </main>
+
+    <!-- Modal Ticket -->
+    <div id="ticketModal">
+        <div class="ticket-box">
+            <h3>VOTRE TICKET</h3>
+            <p id="modalInstName">Mairie de Dakar</p>
+            <div class="ticket-number" id="modalTicketNum">A-105</div>
+            <p style="margin: 1rem 0; color: #718096">Date: 25 Mai 2024<br>Heure: 10:45</p>
+            <button class="btn-primary" style="width: 100%; justify-content: center;" onclick="closeModal()">Terminer</button>
         </div>
     </div>
 
     <script>
-        const API_URL = 'https://queueflow-production.up.railway.app';
-        
-        function getUserRole() {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get('role') || 'citizen';
-        }
-
-        document.getElementById('userRole').textContent = getUserRole().toUpperCase();
-
-        async function loadQueueData() {
-            try {
-                const response = await fetch(`${API_URL}/`);
-                const data = await response.json();
-                
-                document.getElementById('apiStatus').className = 'api-status';
-                document.getElementById('apiStatus').innerHTML = '<div class="api-dot"></div><span>Connecté à l\'API QueueFlow - ' + (data.message || 'Actif') + '</span>';
-                
-                // Update stats
-                document.getElementById('totalQueues').textContent = '5';
-                document.getElementById('totalCitizens').textContent = '23';
-                document.getElementById('avgWaitTime').textContent = '15 min';
-                
-                // Display queue list
-                displayQueues();
-            } catch (error) {
-                console.error('Erreur:', error);
-                document.getElementById('apiStatus').className = 'api-status error';
-                document.getElementById('apiStatus').innerHTML = '<div class="api-dot"></div><span>Erreur de connexion à l\'API</span>';
-            }
-        }
-
-        function displayQueues() {
-            const queueList = document.getElementById('queueList');
-            const queues = [
-                { name: 'Mairie de Dakar - Service Civil', waiting: 5, status: 'active' },
-                { name: 'Hôpital Principal - Consultations', waiting: 12, status: 'active' },
-                { name: 'Banque Atlantique - Guichet', waiting: 3, status: 'waiting' },
-                { name: 'ANSD - Enregistrements', waiting: 8, status: 'active' },
-                { name: 'Poste Sénégalaise - Colis', waiting: 2, status: 'waiting' }
-            ];
+        // Check Auth and Role
+        window.onload = () => {
+            const user = JSON.parse(localStorage.getItem('queueflow_user')) || { name: 'Invité', role: 'citoyen' };
+            document.getElementById('userName').textContent = user.name;
+            document.getElementById('roleBadge').textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
             
-            queueList.innerHTML = queues.map(queue => `
-                <div class="queue-item">
-                    <div>
-                        <strong>${queue.name}</strong><br>
-                        <span>${queue.waiting} personnes en attente</span>
-                    </div>
-                    <span class="status ${queue.status}">${queue.status === 'active' ? 'Actif' : 'En attente'}</span>
-                </div>
-            `).join('');
+            // Show correct view
+            document.querySelectorAll('.role-view').forEach(v => v.classList.remove('active'));
+            if (user.role === 'admin') document.getElementById('adminView').classList.add('active');
+            else if (user.role === 'operateur') document.getElementById('operatorView').classList.add('active');
+            else document.getElementById('citizenView').classList.add('active');
+        };
+
+        function generateTicket() {
+            const inst = document.getElementById('instSelect').value;
+            if(!inst) return alert('Veuillez choisir une institution');
+            
+            document.getElementById('modalInstName').textContent = inst;
+            document.getElementById('modalTicketNum').textContent = 'Q-' + Math.floor(Math.random() * 900 + 100);
+            document.getElementById('ticketModal').style.display = 'flex';
         }
 
-        function refreshData() {
-            loadQueueData();
+        function closeModal() {
+            document.getElementById('ticketModal').style.display = 'none';
         }
 
-        // Load data on page load
-        loadQueueData();
-        
-        // Refresh every 30 seconds
-        setInterval(loadQueueData, 30000);
+        function logout() {
+            localStorage.removeItem('queueflow_user');
+            window.location.href = 'login.html';
+        }
+
+        function callNext() {
+            alert('Appel du client suivant...');
+            // Logic for operator
+        }
     </script>
 </body>
 </html>
