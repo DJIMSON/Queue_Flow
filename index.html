@@ -11,19 +11,18 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .fade-in { animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); }
-        .card-active { border-color: #ef4444 !important; position: relative; }
+        .card-active { border: 1px solid #f87171 !important; position: relative; }
         .card-active::after {
             content: '';
             position: absolute;
-            top: 50%;
-            right: 15%;
+            top: 55%;
+            right: 20%;
             transform: translateY(-50%);
-            width: 24px;
-            height: 24px;
+            width: 32px;
+            height: 32px;
             background-color: #22d3ee;
             border-radius: 50%;
-            box-shadow: 0 0 15px rgba(34, 211, 238, 0.4);
+            z-index: 10;
         }
     </style>
 </head>
@@ -37,12 +36,12 @@
                         <div class="bg-blue-600 w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-blue-200 group-hover:rotate-12 transition-all">
                             <i class="fas fa-bolt-lightning text-xl"></i>
                         </div>
-                        <span class="text-2xl font-extrabold tracking-tight text-slate-900">Queue<span class="text-blue-600">Flow</span></span>
+                        <span class="text-2xl font-extrabold tracking-tight text-[#0F172A]">Queue<span class="text-blue-600">Flow</span></span>
                     </div>
                     
                     <div id="nav-actions" class="flex items-center gap-8">
                         <button onclick="showView('login')" class="text-sm font-bold text-slate-600 hover:text-blue-600 transition">Connexion</button>
-                        <button onclick="showView('login')" class="bg-[#0F172A] text-white px-8 py-3.5 rounded-full text-sm font-bold hover:bg-slate-800 transition shadow-2xl shadow-slate-200">Essayer gratuitement</button>
+                        <button onclick="showView('login')" class="bg-[#0F172A] text-white px-8 py-3.5 rounded-full text-sm font-bold hover:bg-slate-800 transition">Essayer gratuitement</button>
                     </div>
 
                     <div id="user-profile" class="hidden flex items-center gap-4">
@@ -60,41 +59,39 @@
         <main class="max-w-7xl mx-auto px-4 py-12">
             <!-- View: Landing -->
             <section id="view-landing" class="view fade-in">
-                <div class="max-w-4xl mx-auto text-center py-20">
-                    <span class="inline-block px-4 py-1.5 mb-6 text-xs font-bold tracking-widest text-blue-600 uppercase bg-blue-50 rounded-full">Système Intelligent de File d'Attente</span>
-                    <h1 class="text-6xl md:text-7xl font-black text-slate-900 mb-8 tracking-tight leading-[1.1]">Ne faites plus jamais la <span class="text-blue-600 underline decoration-blue-200 underline-offset-8">queue</span>.</h1>
-                    <p class="text-xl text-slate-500 mb-12 max-w-2xl mx-auto leading-relaxed">Une plateforme unifiée pour réserver vos tickets dans tous les services publics et privés du Sénégal. Gagnez du temps, vivez mieux.</p>
-                    <div class="flex flex-wrap justify-center gap-4">
-                        <button onclick="showView('blocks')" class="bg-blue-600 text-white px-10 py-5 rounded-2xl font-bold text-lg hover:bg-blue-700 shadow-2xl shadow-blue-200 transition-all hover:-translate-y-1">Prendre un ticket maintenant</button>
-                    </div>
+                <div class="max-w-4xl mx-auto text-center py-24">
+                    <span class="inline-block px-4 py-1.5 mb-6 text-[10px] font-black tracking-[0.2em] text-blue-600 uppercase bg-blue-50 rounded-full">SYSTÈME INTELLIGENT DE FILE D'ATTENTE</span>
+                    <h1 class="text-7xl font-black text-[#0F172A] mb-10 tracking-tight leading-[1.1]">Ne faites plus jamais la <span class="text-blue-600 underline decoration-blue-100 underline-offset-8">queue</span>.</h1>
+                    <p class="text-xl text-slate-500 mb-12 max-w-2xl mx-auto leading-relaxed font-medium">Une plateforme unifiée pour réserver vos tickets dans tous les services publics et privés du Sénégal. Gagnez du temps, vivez mieux.</p>
+                    <button onclick="showView('blocks')" class="bg-[#2563EB] text-white px-12 py-5 rounded-2xl font-bold text-lg hover:bg-blue-700 shadow-2xl shadow-blue-200 transition-all">Prendre un ticket maintenant</button>
                 </div>
             </section>
 
-            <!-- View: Blocks (Sector Selection) -->
+            <!-- View: Blocks -->
             <section id="view-blocks" class="view hidden fade-in py-10">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 max-w-5xl mx-auto">
                     <!-- Santé -->
-                    <div onclick="selectBlock('Santé')" class="bg-white p-12 rounded-[2.5rem] border border-slate-100 hover:border-red-200 cursor-pointer transition-all shadow-sm hover:shadow-2xl group card-active">
-                        <div class="text-[#EF4444] text-5xl mb-6">
-                            <i class="fas fa-hospital-user"></i>
+                    <div onclick="selectBlock('Santé')" class="bg-white p-12 rounded-[2.5rem] border border-slate-100 cursor-pointer transition-all shadow-sm hover:shadow-2xl card-active">
+                        <div class="text-[#EF4444] text-5xl mb-8">
+                            <i class="fas fa-hospital-alt"></i>
                         </div>
-                        <h3 class="font-black text-2xl text-slate-900">Santé</h3>
+                        <h3 class="font-black text-3xl text-[#0F172A]">Santé</h3>
                     </div>
 
                     <!-- Banques -->
-                    <div onclick="selectBlock('Banques')" class="bg-white p-12 rounded-[2.5rem] border border-slate-100 hover:border-emerald-200 cursor-pointer transition-all shadow-sm hover:shadow-2xl group">
-                        <div class="text-[#059669] text-5xl mb-6">
+                    <div onclick="selectBlock('Banques')" class="bg-white p-12 rounded-[2.5rem] border border-slate-100 cursor-pointer transition-all shadow-sm hover:shadow-2xl">
+                        <div class="text-[#059669] text-5xl mb-8">
                             <i class="fas fa-landmark"></i>
                         </div>
-                        <h3 class="font-black text-2xl text-slate-900">Banques</h3>
+                        <h3 class="font-black text-3xl text-[#0F172A]">Banques</h3>
                     </div>
 
                     <!-- Mairies -->
-                    <div onclick="selectBlock('Mairies')" class="bg-white p-12 rounded-[2.5rem] border border-slate-100 hover:border-orange-200 cursor-pointer transition-all shadow-sm hover:shadow-2xl group">
-                        <div class="text-[#D97706] text-5xl mb-6">
+                    <div onclick="selectBlock('Mairies')" class="bg-white p-12 rounded-[2.5rem] border border-slate-100 cursor-pointer transition-all shadow-sm hover:shadow-2xl">
+                        <div class="text-[#D97706] text-5xl mb-8">
                             <i class="fas fa-city"></i>
                         </div>
-                        <h3 class="font-black text-2xl text-slate-900">Mairies</h3>
+                        <h3 class="font-black text-3xl text-[#0F172A]">Mairies</h3>
                     </div>
                 </div>
             </section>
@@ -102,17 +99,17 @@
             <!-- View: Login -->
             <section id="view-login" class="view hidden fade-in max-w-md mx-auto py-10">
                 <div class="bg-white p-12 rounded-[3rem] shadow-2xl shadow-slate-200 border border-slate-50">
-                    <h2 class="text-4xl font-black mb-10 tracking-tight text-slate-900">Bon retour.</h2>
+                    <h2 class="text-4xl font-black mb-10 tracking-tight text-[#0F172A]">Bon retour.</h2>
                     <form onsubmit="handleLogin(event)" class="space-y-8">
                         <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">ADRESSE EMAIL</label>
-                            <input type="email" id="login-email" required class="w-full px-6 py-5 bg-[#F1F5F9] border-none rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium text-slate-600" placeholder="nana@gmail.com" value="nana@gmail.com">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">ADRESSE EMAIL</label>
+                            <input type="email" id="login-email" required class="w-full px-7 py-5 bg-[#F1F5F9] border-none rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 transition-all font-semibold text-slate-700" placeholder="nana@gmail.com" value="nana@gmail.com">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">MOT DE PASSE</label>
-                            <input type="password" required class="w-full px-6 py-5 bg-[#F1F5F9] border-none rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium text-slate-600" placeholder="••••••" value="123456">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">MOT DE PASSE</label>
+                            <input type="password" required class="w-full px-7 py-5 bg-[#F1F5F9] border-none rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 transition-all font-semibold text-slate-700" placeholder="••••••" value="123456">
                         </div>
-                        <button class="w-full bg-[#2563EB] text-white py-5 rounded-2xl font-bold text-lg hover:bg-blue-700 shadow-xl shadow-blue-100 transition-all hover:scale-[1.02]">Se connecter</button>
+                        <button class="w-full bg-[#2563EB] text-white py-5 rounded-2xl font-bold text-lg hover:bg-blue-700 shadow-xl shadow-blue-100 transition-all">Se connecter</button>
                     </form>
                 </div>
             </section>
@@ -120,68 +117,54 @@
     </div>
 
     <script>
-        const appState = {
-            user: null,
-            selectedBlock: ''
-        };
+        const appState = { user: null, selectedBlock: '' };
 
         function showView(viewId) {
-            document.querySelectorAll(\'.view\').forEach(v => v.classList.add(\'hidden\'));
-            const view = document.getElementById(\'view-\' + viewId);
-            if(view) view.classList.remove(\'hidden\');
+            document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+            const view = document.getElementById('view-' + viewId);
+            if(view) view.classList.remove('hidden');
             
-            // Toggle nav actions
-            if(viewId === \'login\') {
-                document.getElementById(\'nav-actions\').classList.add(\'opacity-0\', \'pointer-events-none\');
+            if(viewId === 'login') {
+                document.getElementById('nav-actions').classList.add('opacity-0', 'pointer-events-none');
             } else {
-                document.getElementById(\'nav-actions\').classList.remove(\'opacity-0\', \'pointer-events-none\');
+                document.getElementById('nav-actions').classList.remove('opacity-0', 'pointer-events-none');
             }
         }
 
         function handleLogin(e) {
             e.preventDefault();
-            const email = document.getElementById(\'login-email\').value;
-            appState.user = {
-                name: email.split(\'@\')[0],
-                role: "Client"
-            };
+            const email = document.getElementById('login-email').value;
+            appState.user = { name: email.split('@')[0], role: "Client" };
             updateAuthUI();
-            showView(\'blocks\');
+            showView('blocks');
         }
 
         function updateAuthUI() {
             if (appState.user) {
-                document.getElementById(\'nav-actions\').classList.add(\'hidden\');
-                document.getElementById(\'user-profile\').classList.remove(\'hidden\');
-                document.getElementById(\'user-name\').innerText = appState.user.name;
-                document.getElementById(\'user-avatar\').innerText = appState.user.name.charAt(0).toUpperCase();
+                document.getElementById('nav-actions').classList.add('hidden');
+                document.getElementById('user-profile').classList.remove('hidden');
+                document.getElementById('user-name').innerText = appState.user.name;
+                document.getElementById('user-avatar').innerText = appState.user.name.charAt(0).toUpperCase();
             } else {
-                document.getElementById(\'nav-actions\').classList.remove(\'hidden\');
-                document.getElementById(\'user-profile\').classList.add(\'hidden\');
+                document.getElementById('nav-actions').classList.remove('hidden');
+                document.getElementById('user-profile').classList.add('hidden');
             }
         }
 
         function logout() {
             appState.user = null;
             updateAuthUI();
-            showView(\'landing\');
+            showView('landing');
         }
 
         function selectBlock(block) {
             appState.selectedBlock = block;
-            document.querySelectorAll(\'#view-blocks .view-blocks-card\').forEach(el => el.classList.remove(\'card-active\'));
-            // Re-targeting for current cards
-            document.querySelectorAll(\'#view-blocks > div > div\').forEach(el => el.classList.remove(\'card-active\'));
-            event.currentTarget.classList.add(\'card-active\');
-            
-            setTimeout(() => {
-                alert(\'Secteur choisi: \' + block + \'. Accès au dashboard...\');
-            }, 300);
+            document.querySelectorAll('#view-blocks > div > div').forEach(el => el.classList.remove('card-active'));
+            event.currentTarget.classList.add('card-active');
+            setTimeout(() => alert('Secteur choisi: ' + block), 300);
         }
 
-        window.onload = () => {
-            showView(\'landing\');
-        };
+        window.onload = () => showView('landing');
     </script>
 </body>
 </html>
