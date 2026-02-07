@@ -1,1 +1,293 @@
-https://djimson.github.io/Queue_Flow/
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QueueFlow - Gestion de File d'Attente</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .fade-in { animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800 font-sans">
+    <div id="app">
+        <!-- Navigation -->
+        <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16 items-center">
+                    <div class="flex items-center gap-2 cursor-pointer" onclick="showView('landing')">
+                        <div class="bg-blue-600 p-2 rounded-lg text-white">
+                            <i class="fas fa-stream"></i>
+                        </div>
+                        <span class="text-xl font-bold text-blue-900 tracking-tight">QueueFlow</span>
+                    </div>
+                    <div id="nav-actions" class="flex gap-4">
+                        <button onclick="showView('login')" class="text-slate-600 hover:text-blue-600 font-medium">Connexion</button>
+                        <button onclick="showView('register')" class="bg-blue-600 text-white px-5 py-2 rounded-lg font-medium hover:bg-blue-700 transition">S'inscrire</button>
+                    </div>
+                    <div id="user-profile" class="hidden flex items-center gap-4">
+                        <span id="user-name" class="font-medium text-slate-700">Utilisateur</span>
+                        <button onclick="logout()" class="text-slate-400 hover:text-red-500 transition"><i class="fas fa-sign-out-alt"></i></button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto px-4 py-8">
+            
+            <!-- View: Landing -->
+            <section id="view-landing" class="view fade-in text-center py-20">
+                <h1 class="text-5xl font-extrabold text-slate-900 mb-6">Gérez votre temps, pas votre attente.</h1>
+                <p class="text-xl text-slate-600 mb-10 max-w-2xl mx-auto">Réservez votre ticket en ligne pour vos services administratifs, banques et hôpitaux en quelques clics.</p>
+                <div class="flex justify-center gap-4">
+                    <button onclick="showView('blocks')" class="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold text-lg hover:bg-blue-700 shadow-lg shadow-blue-200 transition">Prendre un ticket</button>
+                </div>
+            </section>
+
+            <!-- View: Login -->
+            <section id="view-login" class="view hidden fade-in max-w-md mx-auto py-10">
+                <div class="bg-white p-8 rounded-2xl shadow-xl border border-slate-100">
+                    <h2 class="text-2xl font-bold mb-6 text-center">Connexion</h2>
+                    <form onsubmit="handleLogin(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Email</label>
+                            <input type="email" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Mot de passe</label>
+                            <input type="password" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <button class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition">Entrer</button>
+                    </form>
+                    <p class="mt-4 text-center text-sm text-slate-500">Pas de compte? <button onclick="showView('register')" class="text-blue-600 hover:underline">S'inscrire</button></p>
+                </div>
+            </section>
+
+            <!-- View: Register -->
+            <section id="view-register" class="view hidden fade-in max-w-md mx-auto py-10">
+                <div class="bg-white p-8 rounded-2xl shadow-xl border border-slate-100">
+                    <h2 class="text-2xl font-bold mb-6 text-center">Création de compte</h2>
+                    <form onsubmit="handleRegister(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Nom complet</label>
+                            <input type="text" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Email</label>
+                            <input type="email" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Mot de passe</label>
+                            <input type="password" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <button class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition">S'inscrire</button>
+                    </form>
+                    <p class="mt-4 text-center text-sm text-slate-500">Déjà un compte? <button onclick="showView('login')" class="text-blue-600 hover:underline">Se connecter</button></p>
+                </div>
+            </section>
+
+            <!-- View: Blocks Selection -->
+            <section id="view-blocks" class="view hidden fade-in py-10">
+                <h2 class="text-3xl font-bold mb-8">Choisissez un secteur</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div onclick="selectBlock('Hôpitaux')" class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 hover:border-blue-500 hover:shadow-md cursor-pointer transition group">
+                        <div class="bg-red-50 text-red-600 w-12 h-12 flex items-center justify-center rounded-xl mb-4 group-hover:bg-red-600 group-hover:text-white transition">
+                            <i class="fas fa-hospital-alt text-2xl"></i>
+                        </div>
+                        <h3 class="font-bold text-lg">Santé</h3>
+                        <p class="text-slate-500 text-sm">Hôpitaux et Cliniques</p>
+                    </div>
+                    <div onclick="selectBlock('Banques')" class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 hover:border-blue-500 hover:shadow-md cursor-pointer transition group">
+                        <div class="bg-emerald-50 text-emerald-600 w-12 h-12 flex items-center justify-center rounded-xl mb-4 group-hover:bg-emerald-600 group-hover:text-white transition">
+                            <i class="fas fa-university text-2xl"></i>
+                        </div>
+                        <h3 class="font-bold text-lg">Finances</h3>
+                        <p class="text-slate-500 text-sm">Banques et Assurances</p>
+                    </div>
+                    <div onclick="selectBlock('Mairies')" class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 hover:border-blue-500 hover:shadow-md cursor-pointer transition group">
+                        <div class="bg-amber-50 text-amber-600 w-12 h-12 flex items-center justify-center rounded-xl mb-4 group-hover:bg-amber-600 group-hover:text-white transition">
+                            <i class="fas fa-building text-2xl"></i>
+                        </div>
+                        <h3 class="font-bold text-lg">Administration</h3>
+                        <p class="text-slate-500 text-sm">Mairies et Préfectures</p>
+                    </div>
+                    <div onclick="selectBlock('Education')" class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 hover:border-blue-500 hover:shadow-md cursor-pointer transition group">
+                        <div class="bg-blue-50 text-blue-600 w-12 h-12 flex items-center justify-center rounded-xl mb-4 group-hover:bg-blue-600 group-hover:text-white transition">
+                            <i class="fas fa-user-graduate text-2xl"></i>
+                        </div>
+                        <h3 class="font-bold text-lg">Éducation</h3>
+                        <p class="text-slate-500 text-sm">Écoles et Universités</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- View: Institution Selection -->
+            <section id="view-institutions" class="view hidden fade-in py-10">
+                <button onclick="showView('blocks')" class="mb-6 text-blue-600 hover:underline flex items-center gap-2">
+                    <i class="fas fa-arrow-left"></i> Retour aux secteurs
+                </button>
+                <h2 class="text-3xl font-bold mb-8" id="selected-block-title">Institutions</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="institution-list">
+                    <!-- Dynamic -->
+                </div>
+            </section>
+
+            <!-- View: Service Selection -->
+            <section id="view-services" class="view hidden fade-in py-10">
+                <button onclick="showView('institutions')" class="mb-6 text-blue-600 hover:underline flex items-center gap-2">
+                    <i class="fas fa-arrow-left"></i> Retour aux institutions
+                </button>
+                <h2 class="text-3xl font-bold mb-8" id="selected-inst-title">Services</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="service-list">
+                    <!-- Dynamic -->
+                </div>
+            </section>
+
+            <!-- View: Slot Selection -->
+            <section id="view-slots" class="view hidden fade-in py-10">
+                <button onclick="showView('services')" class="mb-6 text-blue-600 hover:underline flex items-center gap-2">
+                    <i class="fas fa-arrow-left"></i> Retour aux services
+                </button>
+                <h2 class="text-3xl font-bold mb-8">Choisissez un créneau</h2>
+                <div class="bg-white p-6 rounded-2xl border border-slate-200">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3" id="slot-list">
+                        <!-- Dynamic -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- View: Ticket Confirmation -->
+            <section id="view-ticket" class="view hidden fade-in py-10 max-w-lg mx-auto">
+                <div class="bg-white p-10 rounded-3xl shadow-2xl border-2 border-dashed border-blue-200 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 bg-blue-600 text-white rounded-bl-2xl font-bold">#A-142</div>
+                    <div class="text-center mb-8">
+                        <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-check text-3xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold">Ticket Réservé !</h2>
+                        <p class="text-slate-500">Présentez ce ticket à l'accueil</p>
+                    </div>
+                    <div class="space-y-4 border-t border-b border-slate-100 py-6 my-6">
+                        <div class="flex justify-between"><span class="text-slate-500">Institution</span><span class="font-bold" id="conf-inst">-</span></div>
+                        <div class="flex justify-between"><span class="text-slate-500">Service</span><span class="font-bold" id="conf-serv">-</span></div>
+                        <div class="flex justify-between"><span class="text-slate-500">Horaire</span><span class="font-bold text-blue-600" id="conf-slot">-</span></div>
+                    </div>
+                    <button onclick="showView('landing')" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold hover:bg-slate-800 transition">Terminer</button>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        let state = {
+            user: null,
+            selectedBlock: '',
+            selectedInstitution: '',
+            selectedService: '',
+            selectedSlot: ''
+        };
+
+        const institutions = {
+            'Hôpitaux': ['Hôpital Principal', 'Hôpital de Fann', 'Clinique de la Paix'],
+            'Banques': ['Société Générale', 'Ecobank', 'CBAO'],
+            'Mairies': ['Mairie de Dakar', 'Mairie de Pikine', 'Mairie de Grand Yoff'],
+            'Education': ['DIT - Dakar', 'UCAD', 'Groupe ISM']
+        };
+
+        const services = ['Ouverture de dossier', 'Consultation générale', 'Caisse / Paiement', 'Retrait de documents'];
+        const slots = ['08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '14:00', '14:30', '15:00', '15:30'];
+
+        function showView(viewId) {
+            document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+            document.getElementById('view-' + viewId).classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            state.user = { name: "Abdoulaye" };
+            updateAuthUI();
+            showView('blocks');
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            state.user = { name: "Abdoulaye" };
+            updateAuthUI();
+            showView('blocks');
+        }
+
+        function updateAuthUI() {
+            if (state.user) {
+                document.getElementById('nav-actions').classList.add('hidden');
+                document.getElementById('user-profile').classList.remove('hidden');
+                document.getElementById('user-name').innerText = state.user.name;
+            } else {
+                document.getElementById('nav-actions').classList.remove('hidden');
+                document.getElementById('user-profile').classList.add('hidden');
+            }
+        }
+
+        function logout() {
+            state.user = null;
+            updateAuthUI();
+            showView('landing');
+        }
+
+        function selectBlock(block) {
+            state.selectedBlock = block;
+            document.getElementById('selected-block-title').innerText = "Institutions : " + block;
+            const list = document.getElementById('institution-list');
+            list.innerHTML = institutions[block].map(inst => `
+                <div onclick="selectInstitution('${inst}')" class="bg-white p-6 rounded-xl border border-slate-200 hover:border-blue-500 cursor-pointer flex justify-between items-center group transition">
+                    <span class="font-semibold text-lg">${inst}</span>
+                    <i class="fas fa-chevron-right text-slate-300 group-hover:text-blue-500 transition"></i>
+                </div>
+            `).join('');
+            showView('institutions');
+        }
+
+        function selectInstitution(inst) {
+            state.selectedInstitution = inst;
+            document.getElementById('selected-inst-title').innerText = "Services chez " + inst;
+            const list = document.getElementById('service-list');
+            list.innerHTML = services.map(serv => `
+                <div onclick="selectService('${serv}')" class="bg-white p-6 rounded-2xl border border-slate-200 hover:shadow-lg cursor-pointer transition">
+                    <h3 class="font-bold text-slate-800 mb-2">${serv}</h3>
+                    <p class="text-sm text-slate-500">Temps d'attente estimé : 15 min</p>
+                </div>
+            `).join('');
+            showView('services');
+        }
+
+        function selectService(serv) {
+            state.selectedService = serv;
+            const list = document.getElementById('slot-list');
+            list.innerHTML = slots.map(slot => `
+                <button onclick="selectSlot('${slot}')" class="py-3 px-4 rounded-xl border border-slate-200 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition font-medium">
+                    ${slot}
+                </button>
+            `).join('');
+            showView('slots');
+        }
+
+        function selectSlot(slot) {
+            if (!state.user) {
+                alert("Veuillez vous connecter pour réserver votre ticket.");
+                showView('login');
+                return;
+            }
+            state.selectedSlot = slot;
+            document.getElementById('conf-inst').innerText = state.selectedInstitution;
+            document.getElementById('conf-serv').innerText = state.selectedService;
+            document.getElementById('conf-slot').innerText = state.selectedSlot;
+            showView('ticket');
+        }
+    </script>
+</body>
+</html>
